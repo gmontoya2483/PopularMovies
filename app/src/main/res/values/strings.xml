@@ -10,7 +10,6 @@
     <string name="label_id">ID:</string>
 
 
-
     <!--
         Seleccion de criterios de busqueda de peliculas
     -->
@@ -47,15 +46,8 @@
     </string-array>
 
 
-
-
-
-
-
     <!--Error Messages -->
     <string name="err_no_netwaork_connection">No network connection available.</string>
-
-
 
 
     <!--Fake string for preview -->
@@ -66,5 +58,9 @@
     <string name="fake_rating">5,45</string>
     <string name="fake_release_date">2016-04-25</string>
     <string name="fake_id">2016</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_main2">Main2Activity</string>
 
 </resources>
