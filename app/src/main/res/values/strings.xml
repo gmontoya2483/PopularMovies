@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">Popular Movies STG2</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_movie_details">Movie Details</string>
+    <string name="label_movie_title">Title:</string>
+    <string name="label_release_date">Release Date:</string>
+    <string name="label_synopsis">Overview:</string>
+    <string name="label_user_rating">Rating:</string>
+    <string name="label_id">ID:</string>
+
+
+
+    <!--
+        Seleccion de criterios de busqueda de peliculas
+    -->
+    <!-- Titulo de la seleccion-->
+    <string name="pref_sort_by_label">Sort criteria</string>
+
+    <!--Valores que van a ser mostrados, pueden ser traducidos dado que son un label a mostrar.
+    Forman parte del array que se usa para mostrar las opciones "pref_sort_by_options"-->
+    <string name="pref_sort_by_label_most_popular">Most popular</string>
+    <string name="pref_sort_by_label_highest_rated">Highest rated</string>
+    <string name="pref_sort_by_label_favorite_collection">Favorite collection</string>
+
+    <!-- Nombre de la clave a ser utilizada  (key, value)-->
+    <string name="pref_sort_by_key" translatable="false">sort_by</string>
+
+    <!--Valores que van a se guardan y se usan internamente, no pueden ser traducidos.
+    (key, value)
+    Forman parte del array que se usa para mostrar las opciones "pref_sort_by_options"-->
+    <string name="pref_sort_by_most_popular" translatable="false">popular</string>
+    <string name="pref_sort_by_highest_rated" translatable="false">top_rated</string>
+    <string name="pref_sort_by_favorite_collection" translatable="false">favorite_collection</string>
+
+
+    <string-array name="pref_sort_by_values">
+        <item>@string/pref_sort_by_most_popular</item>
+        <item>@string/pref_sort_by_highest_rated</item>
+        <item>@string/pref_sort_by_favorite_collection</item>
+    </string-array>
+
+    <string-array name="pref_sort_by_options">
+        <item>@string/pref_sort_by_label_most_popular</item>
+        <item>@string/pref_sort_by_label_highest_rated</item>
+        <item>@string/pref_sort_by_label_favorite_collection</item>
+    </string-array>
+
+
+
+
+
+
+
+    <!--Error Messages -->
+    <string name="err_no_netwaork_connection">No network connection available.</string>
+
+
+
+
+    <!--Fake string for preview -->
+    <string name="fake_overview">
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar,
+    </string>
+    <string name="fake_title">Title</string>
+    <string name="fake_rating">5,45</string>
+    <string name="fake_release_date">2016-04-25</string>
+    <string name="fake_id">2016</string>
+
+</resources>
