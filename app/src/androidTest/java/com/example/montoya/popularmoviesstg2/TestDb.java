@@ -161,6 +161,19 @@ public class TestDb extends AndroidTestCase{
         assertFalse( "Error: More than one record returned from location query",cursor.moveToNext() );
 
 
+
+        //Verify that the inserted record is deleted correctly
+        int qtyOfDeletedRecords=db.delete(PopularMoviesContract.MoviesEntry.TABLE_NAME,PopularMoviesContract.MoviesEntry._ID +"=?",new String []{Long.toString(movieRowId)});
+        assertEquals("Error: record was not deleted correctly",1,qtyOfDeletedRecords);
+
+        cursor=db.rawQuery("SELECT * FROM "+PopularMoviesContract.MoviesEntry.TABLE_NAME+"" +
+                        " WHERE "+ PopularMoviesContract.MoviesEntry._ID +"=?"
+                , new String []{Long.toString(movieRowId)});
+
+        // Verify if the query got records
+        assertFalse( "Error: The fake record was not deleted", cursor.moveToFirst() );
+
+
         cursor.close();
         db.close();
 
