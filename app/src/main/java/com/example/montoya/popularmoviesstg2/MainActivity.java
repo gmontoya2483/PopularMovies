@@ -12,13 +12,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    /* Moved to the MoviesFragment class
-    /
-    private CustomGridArrayAdapter myMovieAdapter;
-    private GridView myMovieListView;
-    private ArrayList<Movie> myMovieList=new ArrayList<Movie>();
-
-    */
 
 
     @Override
@@ -27,59 +20,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-        /*Moved to the MoviesFragment Class
-
-        myMovieAdapter=new CustomGridArrayAdapter(this,myMovieList);
-        myMovieListView=(GridView) findViewById(R.id.movies_ListView);
-        myMovieListView.setAdapter(myMovieAdapter);
-
-
-
-
-        //Set OnItemclickListener on the actual Listview
-        myMovieListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                // Get the selected movie
-                Movie movie=myMovieList.get(position);
-
-                //Toast.makeText(MainActivity.this, "Item clicked at the position: "+position+" - Title: "+movie.getTitle(), Toast.LENGTH_SHORT).show();
-
-                Intent intent=new Intent(MainActivity.this,MovieDetailsActivity.class);
-                intent.putExtra("ID",movie.getId());
-                intent.putExtra("TITLE",movie.getTitle());
-                intent.putExtra("RELEASE_DATE", movie.getReleaseDate());
-                intent.putExtra("USER_RATING", movie.getUserRating());
-                intent.putExtra("SYNOPSIS", movie.getSysnopsis());
-                intent.putExtra("IMAGE", movie.getImageThumbnail());
-
-                startActivity(intent);
-
-
-            }
-        });
-
-        */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -114,112 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
-    /*
-    Moved to the MoviesFragment class
-    //
-    //
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        updateMovies();
-
-    }
-
-
-
-    private void updateMovies(){
-        //Check if there is internet connection
-        ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            //Execute the Async task
-            FetchMoviesTask moviesTask=new FetchMoviesTask();
-            moviesTask.execute();
-
-
-        } else {
-
-            Toast.makeText(MainActivity.this, R.string.err_no_netwaork_connection, Toast.LENGTH_LONG).show();
-        }
-
-
-
-    }
-
-
-
-
-
-
-
-
-    public class FetchMoviesTask extends AsyncTask<Void,Void,ArrayList<Movie>>{
-
-        private final String LOG_TAG=FetchMoviesTask.class.getSimpleName();
-
-        private TheMovieDB theMDB = new TheMovieDB();
-
-
-
-
-        @Override
-        protected ArrayList<Movie> doInBackground(Void... params) {
-
-            //Get the selected sorby from the Shared Preferences
-            SharedPreferences sharedPrefs= PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            String endPointFilter=sharedPrefs.getString(
-                    getString(R.string.pref_sort_by_key),
-                    getString(R.string.pref_sort_by_most_popular));
-
-
-
-            String JsonMessage=theMDB.getDataFromInternet(endPointFilter);
-            ArrayList<Movie> myMovieList;
-
-            if (JsonMessage!=null){
-                myMovieList=new ArrayList<Movie>(theMDB.JSonParser(JsonMessage));
-
-
-
-                return myMovieList;
-
-            }else{
-
-
-                return null;
-            }
-
-        }
-
-
-        @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
-
-            myMovieList.clear();
-
-            if(movies!=null){
-
-                for (Movie movieItem: movies){
-                    myMovieList.add(movieItem);
-                }
-
-                 myMovieListView.setAdapter(myMovieAdapter);
-            }
-        }
-    }
-
-
-*/
-
-
-
-
-
-
-
 
 
 }

@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 
-    private String id;
+    private Long id;
     private String title;
     private String synopsis;
     private String image;
@@ -54,7 +54,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private void getIntentData(){
         Intent intent=getIntent();
         if (intent != null) {
-            this.id=intent.getStringExtra("ID");
+            this.id=intent.getLongExtra("ID",0L);
             this.title = intent.getStringExtra("TITLE");
             this.synopsis=intent.getStringExtra("SYNOPSIS");
             this.image=intent.getStringExtra("IMAGE");
@@ -87,7 +87,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         //Set the movie id
         movieRating=(TextView) findViewById(R.id.details_id);
-        movieRating.setText(this.id);
+        movieRating.setText(Long.toString(this.id));
 
 
 
@@ -95,6 +95,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
         //Set the movie Synopsis
         movieSynopsis=(TextView) findViewById(R.id.details_synopsys);
         movieSynopsis.setText(this.synopsis);
+
+
+
 
     }
 
