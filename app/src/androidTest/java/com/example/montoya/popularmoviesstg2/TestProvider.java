@@ -1,6 +1,7 @@
 package com.example.montoya.popularmoviesstg2;
 
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -10,6 +11,7 @@ import android.util.Log;
 import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesDbHelper;
+import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesProvider;
 
 
 /**
@@ -102,6 +104,13 @@ public class TestProvider extends AndroidTestCase {
         if(null!=insertedMovieUri){
             Log.e("TEST CREATED URI:  ", insertedMovieUri.toString());
 
+            UriMatcher testMatcher= PopularMoviesProvider.buildUriMatcher();
+
+
+            //Verify the MOVIE_WITH_ID matcher
+            assertEquals("Error: MOVIE by ID URI was matched incorrectly.",testMatcher.match(insertedMovieUri), PopularMoviesProvider.MOVIE_WITH_ID);
+
+            /*
             cursor=mContext.getContentResolver().query(insertedMovieUri,null,null,null,null);
 
             // Verify if the query got records
@@ -113,7 +122,7 @@ public class TestProvider extends AndroidTestCase {
 
             //Verify there no additional records
             assertFalse("Error: More that 1 record was taken from the DB",cursor.moveToNext());
-
+        */
         }else{
             fail("the returned iserted URI was null");
         }
