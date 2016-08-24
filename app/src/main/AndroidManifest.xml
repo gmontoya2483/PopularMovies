@@ -32,6 +32,14 @@
                 android:value="com.example.montoya.popularmoviesstg2.MainActivity" />
         </activity>
         <activity android:name=".SettingsActivity" />
+
+        <provider
+            android:authorities="com.example.montoya.popularmovies"
+            android:name=".model.data.PopularMoviesProvider"
+            android:exported="false"
+            android:syncable="true"
+            />
+
     </application>
 
 </manifest>

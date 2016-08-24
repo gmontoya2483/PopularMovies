@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.Log;
 
 /**
  * Created by montoya on 17.08.2016.
@@ -19,13 +20,13 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
     //Codes for the UriMatcher
-    private static final int MOVIE=100;
-    private static final int MOVIE_WITH_ID=110;
+    public static final int MOVIE=100;
+    public static final int MOVIE_WITH_ID=110;
 
 
 
 
-    static UriMatcher buildUriMatcher() {
+    public static UriMatcher buildUriMatcher() {
         // I know what you're thinking.  Why create a UriMatcher when you can use regular
         // expressions instead?  Because you're not crazy, that's why.
 
@@ -36,8 +37,14 @@ public class PopularMoviesProvider extends ContentProvider {
         final String authority = PopularMoviesContract.CONTENT_AUTHORITY;
 
         // For each type of URI you want to add, create a corresponding code.
+        matcher.addURI(authority, PopularMoviesContract.PATH_MOVIES + "/*", MOVIE_WITH_ID);
         matcher.addURI(authority, PopularMoviesContract.PATH_MOVIES, MOVIE);
-        matcher.addURI(authority, PopularMoviesContract.PATH_MOVIES+"/#", MOVIE_WITH_ID);
+
+
+
+
+
+
 
 
         return matcher;
@@ -54,39 +61,48 @@ public class PopularMoviesProvider extends ContentProvider {
     }
 
 
+
+    @Override
+    public String getType(Uri uri) {
+
+        final int match = mUriMatcher.match(uri);
+
+        switch (match) {
+
+            case MOVIE_WITH_ID:
+                return PopularMoviesContract.MoviesEntry.CONTENT_ITEM_TYPE;
+            case MOVIE:
+                return PopularMoviesContract.MoviesEntry.CONTENT_DIR_TYPE;
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri + " - match value: "+match);
+        }
+
+
+    }
+
+
+
+
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         Cursor retCursor;
+        final int match=mUriMatcher.match(uri);
 
-        switch (mUriMatcher.match(uri)){
+        switch (match){
             case MOVIE:
             {
-                retCursor= mPopularMoviesDbHelper.getReadableDatabase().query(
-                        PopularMoviesContract.MoviesEntry.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
+                String id=String.valueOf(ContentUris.parseId(uri));
+                retCursor=queryMovieFromDbById(id);
                 break;
 
             }
             case MOVIE_WITH_ID:
             {
-                retCursor= mPopularMoviesDbHelper.getReadableDatabase().query(
-                        PopularMoviesContract.MoviesEntry.TABLE_NAME,
-                        projection,
-                        PopularMoviesContract.MoviesEntry._ID + " = ?",
-                        new String[]{String.valueOf(ContentUris.parseId(uri))},
-                        null,
-                        null,
-                        sortOrder);
 
-                //TODO probar un SQL Statment directmante.
-
-
+                String id=String.valueOf(ContentUris.parseId(uri));
+                retCursor=queryMovieFromDbById(id);
 
                 break;
             }
@@ -95,7 +111,9 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
             default:
+
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
+
 
 
         }
@@ -105,29 +123,29 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
 
-    @Override
-    public String getType(Uri uri) {
-
-        final int match = mUriMatcher.match(uri);
-
-        switch (match) {
-            // Student: Uncomment and fill out these two cases
-            case MOVIE_WITH_ID:
-                return PopularMoviesContract.MoviesEntry.CONTENT_ITEM_TYPE;
-            case MOVIE:
-                return PopularMoviesContract.MoviesEntry.CONTENT_DIR_TYPE;
-
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-        }
-
-
-    }
 
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+
+        Uri insertedUri=null;
+        final int match=mUriMatcher.match(uri);
+        Log.e(LOG_TAG, "Expected uri:"+ match);
+
+        switch (match){
+            case MOVIE:
+                insertedUri=insertMovieIntoDb(values);
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Unknown uri: "+uri);
+
+        }
+
+
+
+
+        return insertedUri;
     }
 
     @Override
@@ -186,6 +204,67 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
     }
+
+
+
+    private Uri insertMovieIntoDb(ContentValues values){
+
+        Uri insertedMovieUri=null;
+        Long insertedMovieId;
+
+
+        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+        if (db.isOpen()){
+            insertedMovieId=db.insert(PopularMoviesContract.MoviesEntry.TABLE_NAME,null,values);
+            if(insertedMovieId!=-1){
+
+                insertedMovieUri=PopularMoviesContract.MoviesEntry.buildMoviebyIdUri(insertedMovieId);
+
+
+            }else{
+                insertedMovieUri=null;
+                Log.e(LOG_TAG,"Movie could not be inserted");
+            }
+            db.close();
+
+        }else{
+            insertedMovieUri=null;
+            Log.e(LOG_TAG,"database could not be opened");
+        }
+
+
+        return insertedMovieUri;
+
+
+    }
+
+
+
+
+    private Cursor queryMovieFromDbById(String id){
+
+        Cursor cursor;
+
+        SQLiteDatabase db=mPopularMoviesDbHelper.getReadableDatabase();
+        if (db.isOpen()){
+            cursor=db.query(PopularMoviesContract.MoviesEntry.TABLE_NAME,
+                    null,
+                    PopularMoviesContract.MoviesEntry._ID + " = ?",
+                    new String[]{id},
+                    null,null,null);
+            db.close();
+        }else{
+            cursor=null;
+            Log.e(LOG_TAG,"database could not be opened");
+        }
+
+
+        return cursor;
+
+
+    }
+
+
 
 
 
