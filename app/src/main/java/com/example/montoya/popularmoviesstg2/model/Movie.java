@@ -1,6 +1,9 @@
 package com.example.montoya.popularmoviesstg2.model;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 
@@ -25,6 +28,41 @@ public class Movie {
         this.userRating = userRating;
         this.releaseDate = releaseDate;
     }
+
+
+    // This constructor receives a Movie ID andthe context and creates a Movie Objects from the database
+    // If the user ID is not found in the database it set id= -1L
+    public Movie(Context context, long id){
+
+        Cursor cursor;
+        Uri uriMovieByID=PopularMoviesContract.MoviesEntry.buildMoviebyIdUri(id);
+        cursor=context.getContentResolver().query(uriMovieByID,null,null,null,null);
+
+        if (cursor.getCount()!=1){
+            this.id=-1L;
+            this.title=null;
+            this.imageThumbnail=null;
+            this.sysnopsis=null;
+            this.userRating=null;
+            this.releaseDate=null;
+
+        }else{
+            cursor.moveToFirst();
+            this.id=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID));
+            this.title=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE));
+            this.imageThumbnail=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL));
+            this.sysnopsis=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS));
+            this.userRating=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING));
+            this.releaseDate=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE));
+
+        }
+
+        cursor.close();
+
+    }
+
+
+
 
     public long getId() {
         return id;
