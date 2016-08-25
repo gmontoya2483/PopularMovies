@@ -1,5 +1,6 @@
 package com.example.montoya.popularmoviesstg2.model.data;
 
+import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -37,7 +38,7 @@ public class PopularMoviesProvider extends ContentProvider {
         final String authority = PopularMoviesContract.CONTENT_AUTHORITY;
 
         // For each type of URI you want to add, create a corresponding code.
-        matcher.addURI(authority, PopularMoviesContract.PATH_MOVIES + "/*", MOVIE_WITH_ID);
+        matcher.addURI(authority, PopularMoviesContract.PATH_MOVIES + "/#", MOVIE_WITH_ID);
         matcher.addURI(authority, PopularMoviesContract.PATH_MOVIES, MOVIE);
 
 
@@ -62,6 +63,8 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
 
+
+
     @Override
     public String getType(Uri uri) {
 
@@ -75,7 +78,7 @@ public class PopularMoviesProvider extends ContentProvider {
                 return PopularMoviesContract.MoviesEntry.CONTENT_DIR_TYPE;
 
             default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri + " - match value: "+match);
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
 
@@ -87,35 +90,33 @@ public class PopularMoviesProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-        Cursor retCursor;
+        Cursor retCursor=null;
         final int match=mUriMatcher.match(uri);
 
         switch (match){
             case MOVIE:
             {
-                String id=String.valueOf(ContentUris.parseId(uri));
-                retCursor=queryMovieFromDbById(id);
+                retCursor=mPopularMoviesDbHelper.getReadableDatabase().query(
+                        PopularMoviesContract.MoviesEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
 
             }
             case MOVIE_WITH_ID:
             {
-
-                String id=String.valueOf(ContentUris.parseId(uri));
-                retCursor=queryMovieFromDbById(id);
-
+               String movie_id= String.valueOf(ContentUris.parseId(uri));
+                retCursor=queryMovieById(movie_id);
                 break;
             }
-
-
-
-
             default:
 
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
-
-
-
         }
         return retCursor;
     }
@@ -130,21 +131,15 @@ public class PopularMoviesProvider extends ContentProvider {
 
         Uri insertedUri=null;
         final int match=mUriMatcher.match(uri);
-        Log.e(LOG_TAG, "Expected uri:"+ match);
-
         switch (match){
             case MOVIE:
-                insertedUri=insertMovieIntoDb(values);
+                insertedUri=insertMovie(values);
                 break;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: "+uri);
 
         }
-
-
-
-
         return insertedUri;
     }
 
@@ -176,25 +171,14 @@ public class PopularMoviesProvider extends ContentProvider {
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
 
-        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+
         final int match = mUriMatcher.match(uri);
         int rowsInserted = 0;
 
         switch (match) {
             case MOVIE:
-                db.beginTransaction();
-                try {
-                    for (ContentValues value : values) {
+                rowsInserted=bulkInsertMovies(values);
 
-                        long _id=db.insert(PopularMoviesContract.MoviesEntry.TABLE_NAME,null,value);
-                        if (_id!=-1){
-                            rowsInserted++;
-                        }
-                    }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                }
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -206,8 +190,19 @@ public class PopularMoviesProvider extends ContentProvider {
     }
 
 
+    @Override
+    @TargetApi(11)
+    public void shutdown() {
+        mPopularMoviesDbHelper.close();
+        super.shutdown();
+    }
 
-    private Uri insertMovieIntoDb(ContentValues values){
+
+    //Helper methods stars here
+    //
+    //
+
+    private Uri insertMovie(ContentValues values){
 
         Uri insertedMovieUri=null;
         Long insertedMovieId;
@@ -225,7 +220,7 @@ public class PopularMoviesProvider extends ContentProvider {
                 insertedMovieUri=null;
                 Log.e(LOG_TAG,"Movie could not be inserted");
             }
-            db.close();
+
 
         }else{
             insertedMovieUri=null;
@@ -239,20 +234,17 @@ public class PopularMoviesProvider extends ContentProvider {
     }
 
 
-
-
-    private Cursor queryMovieFromDbById(String id){
+    private Cursor queryMovieById(String id){
 
         Cursor cursor;
 
         SQLiteDatabase db=mPopularMoviesDbHelper.getReadableDatabase();
         if (db.isOpen()){
-            cursor=db.query(PopularMoviesContract.MoviesEntry.TABLE_NAME,
-                    null,
-                    PopularMoviesContract.MoviesEntry._ID + " = ?",
-                    new String[]{id},
-                    null,null,null);
-            db.close();
+
+            String SQLStatment="SELECT * from "+PopularMoviesContract.MoviesEntry.TABLE_NAME+" WHERE _id="+id;
+
+            cursor=db.rawQuery(SQLStatment,null);
+
         }else{
             cursor=null;
             Log.e(LOG_TAG,"database could not be opened");
@@ -264,6 +256,29 @@ public class PopularMoviesProvider extends ContentProvider {
 
     }
 
+
+    private int bulkInsertMovies(ContentValues[] values){
+
+        int rowsInserted = 0;
+        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (ContentValues value : values) {
+
+                long _id=db.insert(PopularMoviesContract.MoviesEntry.TABLE_NAME,null,value);
+                if (_id!=-1){
+                    rowsInserted++;
+                }
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+        return rowsInserted;
+
+
+    }
 
 
 

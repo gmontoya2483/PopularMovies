@@ -1,11 +1,14 @@
 package com.example.montoya.popularmoviesstg2;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
 import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
+import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesDbHelper;
 
 /**
  * Created by montoya on 23.08.2016.
@@ -46,6 +49,55 @@ public class TestUtilities extends AndroidTestCase{
         assertEquals("Error: Movie Release date doesn´t Match",movie.getReleaseDate(),cursor.getString(indexRelease));
         assertEquals("Error: Movie Sysnopsis doesn´t Match",movie.getSysnopsis(),cursor.getString(indexSysnopsis));
         assertEquals("Error: Movie User Rating doesn´t Match",movie.getUserRating(),cursor.getString(indexUserRating));
+
+    }
+
+
+
+
+    static int deleteAllMoviesRecords(Context context){
+
+        Cursor cursor;
+        SQLiteDatabase db=new PopularMoviesDbHelper(context).getWritableDatabase();
+        int qtyOfDeletedRecords=db.delete(PopularMoviesContract.MoviesEntry.TABLE_NAME,null,null);
+
+        cursor=db.rawQuery("SELECT "+PopularMoviesContract.MoviesEntry._ID+" FROM "+PopularMoviesContract.MoviesEntry.TABLE_NAME,null);
+        assertFalse("Error: DeleteAllMovies - No all movie records were deleted",cursor.moveToFirst());
+
+        db.close();
+
+        return qtyOfDeletedRecords;
+
+
+
+
+    }
+
+
+    static ContentValues[] generateFakeContentValueArray (int qtyOfMovies){
+        ContentValues values []=new ContentValues[qtyOfMovies];
+
+        final String BASE_TITLE="Fake Title";
+        final String BASE_SYSNOPSIS="Fake sysnopsis";
+        final String BASE_USR_RATING="Fake user rating";
+        final String BASE_RELEASE_DATE="Fake release date";
+        final String BASE_IMAGE_THUMNAIL="Fake image thumbnail";
+
+        for (int i=0;i<qtyOfMovies;i++){
+            values[i]=new Movie(
+                    ((long) i),
+                    BASE_TITLE+" "+i,
+                    BASE_IMAGE_THUMNAIL+" "+i,
+                    BASE_SYSNOPSIS+" "+i,
+                    BASE_USR_RATING+" "+i,
+                    BASE_RELEASE_DATE+" "+i
+            ).getMovieValues();
+
+        }
+
+
+        return values;
+
 
     }
 
