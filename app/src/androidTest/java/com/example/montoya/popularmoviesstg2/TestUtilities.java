@@ -16,6 +16,14 @@ import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesDbHelper;
 public class TestUtilities extends AndroidTestCase{
 
 
+
+    final static String BASE_TITLE="Fake Title";
+    final static String BASE_SYSNOPSIS="Fake sysnopsis";
+    final static String BASE_USR_RATING="Fake user rating";
+    final static String BASE_RELEASE_DATE="Fake release date";
+    final static String BASE_IMAGE_THUMNAIL="Fake image thumbnail";
+
+
     static ContentValues createFakeMovieValues (Movie movie){
 
 
@@ -77,11 +85,7 @@ public class TestUtilities extends AndroidTestCase{
     static ContentValues[] generateFakeContentValueArray (int qtyOfMovies){
         ContentValues values []=new ContentValues[qtyOfMovies];
 
-        final String BASE_TITLE="Fake Title";
-        final String BASE_SYSNOPSIS="Fake sysnopsis";
-        final String BASE_USR_RATING="Fake user rating";
-        final String BASE_RELEASE_DATE="Fake release date";
-        final String BASE_IMAGE_THUMNAIL="Fake image thumbnail";
+
 
         for (int i=0;i<qtyOfMovies;i++){
             values[i]=new Movie(
