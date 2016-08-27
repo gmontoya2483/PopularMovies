@@ -7,6 +7,8 @@ import android.net.Uri;
 
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 
+import java.util.ArrayList;
+
 /**
  * Created by montoya on 05.05.2016.
  */
@@ -64,6 +66,9 @@ public class Movie {
 
 
 
+
+
+
     public long getId() {
         return id;
     }
@@ -103,6 +108,124 @@ public class Movie {
         return testValues;
 
     }
+
+
+    public Uri insertMovie(Context context){
+
+        Uri insertedMovieUri;
+        Uri allMoviesUri=PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
+
+        if (verifyAttributes()){
+            insertedMovieUri=context.getContentResolver().insert(allMoviesUri,this.getMovieValues());
+        }else{
+
+            insertedMovieUri=null;
+        }
+
+        return insertedMovieUri;
+
+    }
+
+
+
+    private boolean verifyAttributes(){
+
+        boolean isOK=true;
+
+
+
+        if (this.getTitle()== null){
+            isOK=false;
+        }
+
+        if (this.getImageThumbnail()== null){
+            isOK=false;
+        }
+
+        if (this.getReleaseDate()== null){
+            isOK=false;
+        }
+
+        if (this.getUserRating()== null){
+            isOK=false;
+        }
+
+        if (this.getSysnopsis()== null){
+            isOK=false;
+        }
+
+
+        return isOK;
+    }
+
+
+    public boolean isEqual(Movie movieToCompare){
+        boolean areEqual=true;
+
+        if(this.getId()!=movieToCompare.getId()){
+            areEqual=false;
+        }
+
+        if (this.getTitle()== movieToCompare.getTitle()){
+            areEqual=false;
+        }
+
+        if (this.getImageThumbnail()== movieToCompare.getImageThumbnail()){
+            areEqual=false;
+        }
+
+        if (this.getReleaseDate()== movieToCompare.getReleaseDate()){
+            areEqual=false;
+        }
+
+        if (this.getUserRating()== movieToCompare.getUserRating()){
+            areEqual=false;
+        }
+
+        if (this.getSysnopsis()== movieToCompare.getSysnopsis()){
+            areEqual=false;
+        }
+
+
+        return areEqual;
+    }
+
+
+
+
+    public static int bulkInsertMovies (Context context,ArrayList<Movie> movies){
+        int quantityOfInsertedMovies=0;
+        int quantityOfMovies=movies.size();
+        Uri allMoviesUri=PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
+
+        ContentValues values[]=new ContentValues[quantityOfMovies];
+
+        //generate the Content values Array
+        int i=0;
+        for (Movie movie: movies) {
+            values[i]=movie.getMovieValues();
+            i++;
+        }
+
+        quantityOfInsertedMovies=context.getContentResolver().bulkInsert(allMoviesUri,values);
+
+        return quantityOfInsertedMovies;
+
+    }
+
+
+    public static Cursor getAllMovies (Context context){
+        Cursor cursor;
+        Uri allMoviesUri=PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
+
+        cursor=context.getContentResolver().query(allMoviesUri,null,null,null,null);
+
+        return cursor;
+    }
+
+
+
+
 
 
 }

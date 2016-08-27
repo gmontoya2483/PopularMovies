@@ -10,6 +10,8 @@ import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesDbHelper;
 
+import java.util.ArrayList;
+
 /**
  * Created by montoya on 23.08.2016.
  */
@@ -78,6 +80,31 @@ public class TestUtilities extends AndroidTestCase{
 
 
 
+
+    }
+
+
+
+    static ArrayList<Movie> generateFakeArrayList (int qtyOfMovies){
+        ArrayList<Movie> movies=new ArrayList<Movie>();
+
+        for (int i=0;i<qtyOfMovies;i++){
+            movies.add(new Movie(
+                            ((long) i),
+                            BASE_TITLE+" "+i,
+                            BASE_IMAGE_THUMNAIL+" "+i,
+                            BASE_SYSNOPSIS+" "+i,
+                            BASE_USR_RATING+" "+i,
+                            BASE_RELEASE_DATE+" "+i
+                            )
+            );
+        }
+
+
+
+        assertEquals("Error: ArreyList size doesn´t match with the expected quantity of movies",movies.size(),qtyOfMovies);
+
+        return movies;
 
     }
 

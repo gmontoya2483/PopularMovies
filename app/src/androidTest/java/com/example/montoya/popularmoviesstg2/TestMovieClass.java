@@ -1,11 +1,14 @@
 package com.example.montoya.popularmoviesstg2;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 
 import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
+
+import java.util.ArrayList;
 
 /**
  * Created by montoya on 25.08.2016.
@@ -74,6 +77,103 @@ public class TestMovieClass extends AndroidTestCase{
 
 
 
+
+
+    }
+
+
+    //Verify insert a movie in the database
+    public void testInsertMovie(){
+        Uri insertedMovieUri;
+        final long ID=100L;
+
+        Movie movieToInsert=new Movie(ID,"Fake Title","Fake Image Thumbnail","Fake Sysnopsis","Fake userRating","Fake releaseDate");
+
+
+        //Verify that the movie was inserted
+        insertedMovieUri=movieToInsert.insertMovie(mContext);
+        assertTrue("Error: returned uri is null",insertedMovieUri!=null);
+
+
+
+
+        //Verify that the movie was inserted correctly
+        Movie insertedMovie= new Movie(mContext,ID);
+        assertTrue("Error: Movie was nor inseted correctly",insertedMovie.isEqual(movieToInsert));
+
+
+        //delete all the Movie Records for further tests
+        TestUtilities.deleteAllMoviesRecords(mContext);
+
+
+    }
+
+
+    public void testBulkInsertMovies(){
+
+        final int QTY_OF_MOVIES=154;
+        int insertedMovies=0;
+        Uri allMovies=PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
+        Cursor cursor;
+
+
+        ArrayList<Movie> movies=new ArrayList<Movie>();
+
+        movies=TestUtilities.generateFakeArrayList(QTY_OF_MOVIES);
+
+        //delete all Movie records
+        TestUtilities.deleteAllMoviesRecords(mContext);
+
+        //BUlk inseert the movies through the Movie Class
+        insertedMovies=Movie.bulkInsertMovies(mContext,movies);
+        assertEquals("Error: quantity of inserted Movies doesn´t match with the expected quantity",insertedMovies,QTY_OF_MOVIES);
+
+
+
+        //Verify get all Movies static method
+        cursor=Movie.getAllMovies(mContext);
+        //Verify the quantity of records
+        assertEquals("Error: Quantity of records doesn´t match with the expected qty",cursor.getCount(),QTY_OF_MOVIES);
+
+        //Verify the entered records
+        Long id=0L;
+        assertTrue("Error: not possible to move to first record",cursor.moveToFirst());
+
+        do{
+
+            id=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID));
+
+
+            //verify the Title
+            assertEquals("Error: Movie Title doesn't match - ("+id+"): ",
+                    TestUtilities.BASE_TITLE+" "+id,
+                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE)));
+
+            //verify the imageThumbnail
+            assertEquals("Error: Movie Image Thumbnails doesn't match - ("+id+"): ",
+                    TestUtilities.BASE_IMAGE_THUMNAIL+" "+id,
+                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL)));
+
+            //verify the Release Date
+            assertEquals("Error: Movie Image release Date doesn't match - ("+id+"): ",
+                    TestUtilities.BASE_RELEASE_DATE+" "+id,
+                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE)));
+
+            //verify the sysnopsis
+            assertEquals("Error: Movie Image Sysnopsiss doesn't match - ("+id+"): ",
+                    TestUtilities.BASE_SYSNOPSIS+" "+id,
+                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS)));
+
+            //verify the User Rating
+            assertEquals("Error: Movie Image User Rating doesn't match - ("+id+"): ",
+                    TestUtilities.BASE_USR_RATING+" "+id,
+                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING)));
+
+        }while (cursor.moveToNext());
+
+
+        //delete all Movie records
+        TestUtilities.deleteAllMoviesRecords(mContext);
 
 
     }
