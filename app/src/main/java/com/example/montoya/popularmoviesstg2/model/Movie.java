@@ -224,6 +224,47 @@ public class Movie {
     }
 
 
+    public static int deleteAllMovies(Context context){
+        int quantityOfDeletedMovies=0;
+        Uri allMoviesUri=PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
+
+
+        quantityOfDeletedMovies=context.getContentResolver().delete(allMoviesUri,null,null);
+
+
+
+
+        return quantityOfDeletedMovies;
+    }
+
+
+
+    public static ArrayList<Movie> getAllMoviesArrayList (Context context){
+        ArrayList<Movie> movieArrayList=new ArrayList<Movie>();
+        Cursor cursor;
+
+
+        cursor=getAllMovies(context);
+
+        while (cursor.moveToNext()){
+            movieArrayList.add(new Movie(
+                    cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID)),
+                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE)),
+                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL)),
+                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS)),
+                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING)),
+                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE))
+
+            ));
+
+
+        }
+
+
+        return movieArrayList;
+    }
+
+
 
 
 

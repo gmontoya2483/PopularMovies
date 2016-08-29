@@ -118,6 +118,10 @@ public class PopularMoviesProvider extends ContentProvider {
 
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+
+        //Set the notification URI for our Cursor and register a content observer to watch changes to the URI
+        retCursor.setNotificationUri(getContext().getContentResolver(),uri);
+
         return retCursor;
     }
 
@@ -140,6 +144,13 @@ public class PopularMoviesProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Unknown uri: "+uri);
 
         }
+
+        //Notify changes to the registered observers !!
+        if (insertedUri!=null){
+
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
         return insertedUri;
     }
 
@@ -156,6 +167,11 @@ public class PopularMoviesProvider extends ContentProvider {
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        if (rowsDeleted>0){
+            getContext().getContentResolver().notifyChange(uri, null);
+
         }
 
         return rowsDeleted;
@@ -182,6 +198,11 @@ public class PopularMoviesProvider extends ContentProvider {
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+
+        if (rowsInserted>0){
+            getContext().getContentResolver().notifyChange(uri, null);
         }
 
         return rowsInserted;

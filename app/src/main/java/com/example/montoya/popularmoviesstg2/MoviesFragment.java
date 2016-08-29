@@ -2,12 +2,9 @@ package com.example.montoya.popularmoviesstg2;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +13,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
+import com.example.montoya.popularmoviesstg2.controler.FetchMoviesTask;
 import com.example.montoya.popularmoviesstg2.model.Movie;
 
 import java.util.ArrayList;
@@ -106,7 +103,7 @@ public class MoviesFragment extends Fragment {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             //Execute the Async task
-            FetchMoviesTask moviesTask=new FetchMoviesTask();
+            FetchMoviesTask moviesTask=new FetchMoviesTask(getActivity(),myMovieAdapter);
             moviesTask.execute();
 
 
@@ -123,7 +120,7 @@ public class MoviesFragment extends Fragment {
 
 
 
-
+/*
     public class FetchMoviesTask extends AsyncTask<Void,Void,ArrayList<Movie>> {
 
         private final String LOG_TAG=FetchMoviesTask.class.getSimpleName();
@@ -173,14 +170,13 @@ public class MoviesFragment extends Fragment {
                 for (Movie movieItem: movies){
                     myMovieList.add(movieItem);
                 }
-                //TODO Please review why if I would have not include this line to set the once again the adater with the emulator the grid was refreshed sometimes and on the other hand it never runned in the cellphone. - Thanks
                 myMovieListView.setAdapter(myMovieAdapter);
             }
         }
     }
 
 
-
+*/
 
 
 

@@ -210,44 +210,7 @@ public class TheMovieDB {
 
 
 
-    /*
-    public void BulkInsertMovies (Context context, ArrayList<Movie> movies){
 
-
-        Vector<ContentValues> cvVector=new Vector<ContentValues>(movies.size());
-
-        for (Movie currentMovie: movies)
-        {
-            ContentValues movieValues=new ContentValues();
-
-            movieValues.put(PopularMoviesContract.MoviesEntry._ID,currentMovie.getId());
-            movieValues.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE,currentMovie.getTitle());
-            movieValues.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL,currentMovie.getImageThumbnail());
-            movieValues.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS,currentMovie.getSysnopsis());
-            movieValues.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING,currentMovie.getUserRating());
-            movieValues.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE,currentMovie.getReleaseDate());
-
-            cvVector.add(movieValues);
-
-        }
-
-        if (cvVector.size()>0){
-            ContentValues[] cvArray=new ContentValues[cvVector.size()];
-            cvVector.toArray(cvArray);
-            context.getContentResolver().bulkInsert(PopularMoviesContract.MoviesEntry.CONTENT_URI,cvArray);
-
-        }
-
-    }
-
-
-    public void DeleteAllMovies(Context context){
-
-        context.getContentResolver().delete(PopularMoviesContract.MoviesEntry.CONTENT_URI,null,null);
-
-    }
-
-*/
 
 
 
