@@ -10,13 +10,7 @@
     tools:context="com.example.montoya.popularmoviesstg2.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <!--
-    <GridView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/movies_ListView"
-        android:numColumns="3"></GridView>
- -->
+
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
