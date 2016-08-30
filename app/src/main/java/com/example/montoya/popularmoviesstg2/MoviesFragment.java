@@ -1,20 +1,22 @@
 package com.example.montoya.popularmoviesstg2;
 
 import android.content.Context;
-import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
 import com.example.montoya.popularmoviesstg2.controler.FetchMoviesTask;
+import com.example.montoya.popularmoviesstg2.controler.MovieCursorAdapter;
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 
 import java.util.ArrayList;
 
@@ -24,7 +26,8 @@ public class MoviesFragment extends Fragment {
 
     private final String LOG_TAG=MoviesFragment.class.getSimpleName();
 
-    private CustomGridArrayAdapter myMovieAdapter;
+    //private CustomGridArrayAdapter myMovieAdapter;  //To use the customgrid Array Adapter
+    private MovieCursorAdapter myMovieAdapter;
     private GridView myMovieListView;
     private ArrayList<Movie> myMovieList=new ArrayList<Movie>();
 
@@ -44,20 +47,32 @@ public class MoviesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        //Define the variables to get the data from the DB
+        Cursor cursor;
+        Uri allMovies= PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
 
 
+
+
+
+        //Get all the movies
+        cursor=getActivity().getContentResolver().query(allMovies,null,null,null,null);
+
+
+
+        //myMovieAdapter=new CustomGridArrayAdapter(getContext(),myMovieList); To use the customgrid adapter
+        myMovieAdapter=new MovieCursorAdapter(getContext(),cursor,0);
 
 
         // Inflate the layout for this fragment
         View rootView= inflater.inflate(R.layout.fragment_movies, container, false);
 
 
-        myMovieAdapter=new CustomGridArrayAdapter(getContext(),myMovieList);
         myMovieListView=(GridView) rootView.findViewById(R.id.movies_ListView);
         myMovieListView.setAdapter(myMovieAdapter);
 
 
-
+    /*
 
         //Set OnItemclickListener on the actual Listview
         myMovieListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -82,6 +97,7 @@ public class MoviesFragment extends Fragment {
 
             }
         });
+    */
 
         return rootView;
 
@@ -103,7 +119,8 @@ public class MoviesFragment extends Fragment {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             //Execute the Async task
-            FetchMoviesTask moviesTask=new FetchMoviesTask(getActivity(),myMovieAdapter);
+            //FetchMoviesTask moviesTask=new FetchMoviesTask(getActivity(),myMovieAdapter);
+            FetchMoviesTask moviesTask=new FetchMoviesTask(getActivity());
             moviesTask.execute();
 
 

@@ -14,7 +14,8 @@ import java.util.ArrayList;
 /**
  * Created by montoya on 29.08.2016.
  */
-public class FetchMoviesTask extends AsyncTask<Void,Void,ArrayList<Movie>> {
+//public class FetchMoviesTask extends AsyncTask<Void,Void,ArrayList<Movie>>
+public class FetchMoviesTask extends AsyncTask<Void,Void,Void> {
 
     private final String LOG_TAG=FetchMoviesTask.class.getSimpleName();
     private TheMovieDB theMDB = new TheMovieDB();
@@ -26,10 +27,10 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,ArrayList<Movie>> {
 
 
 
-    public FetchMoviesTask (Context context, CustomGridArrayAdapter movieAdapter){
+    public FetchMoviesTask (Context context){
 
         mContext=context;
-        mMovieAdapter=movieAdapter;
+
 
 
     }
@@ -38,8 +39,8 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,ArrayList<Movie>> {
 
 
     @Override
-    protected ArrayList<Movie> doInBackground(Void... params) {
-
+    protected Void doInBackground(Void... params) {
+    //protected ArrayList<Movie> doInBackground(Void... params){
 
 
         //Get the selected sortby from the Shared Preferences
@@ -65,12 +66,12 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,ArrayList<Movie>> {
 
             // get data from the Database
             //TODO Verify if this step makes sence
-            myMovieList=null;
-            myMovieList=Movie.getAllMoviesArrayList(mContext);
+            //myMovieList=null;
+            //myMovieList=Movie.getAllMoviesArrayList(mContext);
 
 
 
-            return myMovieList;
+            return null;
 
 
         }else{
@@ -81,7 +82,7 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,ArrayList<Movie>> {
 
     }
 
-
+    /*
     @Override
     protected void onPostExecute(ArrayList<Movie> movies) {
 
@@ -92,14 +93,7 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,ArrayList<Movie>> {
             }
         }
 
-//        myMovieList.clear();
-//
-//        if(movies!=null){
-//
-//            for (Movie movieItem: movies){
-//                myMovieList.add(movieItem);
-//            }
-//            myMovieListView.setAdapter(myMovieAdapter);
-//        }
+
     }
+    */
 }
