@@ -1,8 +1,13 @@
 package com.example.montoya.popularmoviesstg2.controler;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.model.Movie;
 
 import org.json.JSONArray;
@@ -210,6 +215,26 @@ public class TheMovieDB {
 
 
 
+
+    public static void updateMovies(Context context){
+        //Check if there is internet connection
+        ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            //Execute the Async task
+            //FetchMoviesTask moviesTask=new FetchMoviesTask(getActivity(),myMovieAdapter);
+            FetchMoviesTask moviesTask=new FetchMoviesTask(context);
+            moviesTask.execute();
+
+
+        } else {
+
+            Toast.makeText(context, R.string.err_no_netwaork_connection, Toast.LENGTH_LONG).show();
+        }
+
+
+
+    }
 
 
 

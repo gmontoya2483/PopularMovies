@@ -60,6 +60,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
             this.image=intent.getStringExtra("IMAGE");
             this.releaseDate=intent.getStringExtra("RELEASE_DATE");
             this.userRating=intent.getStringExtra("USER_RATING");
+
+            System.out.println(intent.getDataString());
         }
 
     }

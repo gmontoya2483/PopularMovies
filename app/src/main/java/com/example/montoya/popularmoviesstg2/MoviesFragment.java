@@ -1,27 +1,29 @@
 package com.example.montoya.popularmoviesstg2;
 
-import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
-import com.example.montoya.popularmoviesstg2.controler.FetchMoviesTask;
 import com.example.montoya.popularmoviesstg2.controler.MovieCursorAdapter;
+import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
 import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 
 import java.util.ArrayList;
 
 
-public class MoviesFragment extends Fragment {
+public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
 
     private final String LOG_TAG=MoviesFragment.class.getSimpleName();
@@ -30,6 +32,8 @@ public class MoviesFragment extends Fragment {
     private MovieCursorAdapter myMovieAdapter;
     private GridView myMovieListView;
     private ArrayList<Movie> myMovieList=new ArrayList<Movie>();
+    private static final int MOVIE_LOADER = 0;
+
 
 
     public MoviesFragment() {
@@ -41,27 +45,16 @@ public class MoviesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        //Define the variables to get the data from the DB
-        Cursor cursor;
-        Uri allMovies= PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
 
 
-
-
-
-        //Get all the movies
-        cursor=getActivity().getContentResolver().query(allMovies,null,null,null,null);
-
-
-
-        //myMovieAdapter=new CustomGridArrayAdapter(getContext(),myMovieList); To use the customgrid adapter
-        myMovieAdapter=new MovieCursorAdapter(getContext(),cursor,0);
+        myMovieAdapter=new MovieCursorAdapter(getContext(),null,0);
 
 
         // Inflate the layout for this fragment
@@ -72,13 +65,34 @@ public class MoviesFragment extends Fragment {
         myMovieListView.setAdapter(myMovieAdapter);
 
 
-    /*
+
 
         //Set OnItemclickListener on the actual Listview
         myMovieListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                Cursor cursor=(Cursor) parent.getItemAtPosition(position);
+                if (cursor!=null){
+                    Intent intent=new Intent(getContext(),MovieDetailsActivity.class);
+
+                    intent.putExtra("ID",cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID)));
+                    intent.putExtra("TITLE",cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE)));
+                    intent.putExtra("RELEASE_DATE",cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE)));
+                    intent.putExtra("USER_RATING", cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING)));
+                    intent.putExtra("SYNOPSIS", cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS)));
+                    intent.putExtra("IMAGE", cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL)));
+
+                    Uri SelectedMovieUri=PopularMoviesContract.MoviesEntry.buildMoviesUri(cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID)));
+                    intent.setData(SelectedMovieUri);
+
+
+                    startActivity(intent);
+
+
+                }
+
+                /*
                 // Get the selected movie
                 Movie movie=myMovieList.get(position);
 
@@ -93,108 +107,49 @@ public class MoviesFragment extends Fragment {
                 intent.putExtra("IMAGE", movie.getImageThumbnail());
 
                 startActivity(intent);
+                */
 
 
             }
         });
-    */
+
 
         return rootView;
 
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+
+        //init the Loadaer manager always in the OnActivity created
+        getLoaderManager().initLoader(MOVIE_LOADER,null,this);
+        super.onActivityCreated(savedInstanceState);
+    }
 
     @Override
     public void onStart() {
         super.onStart();
-        updateMovies();
+        TheMovieDB.updateMovies(getActivity());
 
     }
 
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri allMoviesUri= PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
+        return new CursorLoader(getActivity(),allMoviesUri,null,null,null,null);
+    }
 
-    private void updateMovies(){
-        //Check if there is internet connection
-        ConnectivityManager connMgr = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            //Execute the Async task
-            //FetchMoviesTask moviesTask=new FetchMoviesTask(getActivity(),myMovieAdapter);
-            FetchMoviesTask moviesTask=new FetchMoviesTask(getActivity());
-            moviesTask.execute();
-
-
-        } else {
-
-            Toast.makeText(getContext(), R.string.err_no_netwaork_connection, Toast.LENGTH_LONG).show();
-        }
-
-
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        myMovieAdapter.swapCursor(data);
 
     }
 
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
 
+        myMovieAdapter.swapCursor(null);
 
-
-
-/*
-    public class FetchMoviesTask extends AsyncTask<Void,Void,ArrayList<Movie>> {
-
-        private final String LOG_TAG=FetchMoviesTask.class.getSimpleName();
-
-        private TheMovieDB theMDB = new TheMovieDB();
-
-
-
-
-        @Override
-        protected ArrayList<Movie> doInBackground(Void... params) {
-
-            //Get the selected sorby from the Shared Preferences
-            SharedPreferences sharedPrefs= PreferenceManager.getDefaultSharedPreferences(getContext());
-            String endPointFilter=sharedPrefs.getString(
-                    getString(R.string.pref_sort_by_key),
-                    getString(R.string.pref_sort_by_most_popular));
-
-
-
-            String JsonMessage=theMDB.getDataFromInternet(endPointFilter);
-            ArrayList<Movie> myMovieList;
-
-            if (JsonMessage!=null){
-                myMovieList=new ArrayList<Movie>(theMDB.JSonParser(JsonMessage));
-
-
-
-                return myMovieList;
-
-            }else{
-
-
-                return null;
-            }
-
-        }
-
-
-        @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
-
-            myMovieList.clear();
-
-            if(movies!=null){
-
-                for (Movie movieItem: movies){
-                    myMovieList.add(movieItem);
-                }
-                myMovieListView.setAdapter(myMovieAdapter);
-            }
-        }
     }
-
-
-*/
-
-
-
 }
