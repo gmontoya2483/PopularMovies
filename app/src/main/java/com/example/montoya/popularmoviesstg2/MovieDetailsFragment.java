@@ -111,8 +111,8 @@ public class MovieDetailsFragment extends Fragment{
 
 
         //Set the movie id
-        movieRating=(TextView) mRootView.findViewById(R.id.details_id);
-        movieRating.setText(Long.toString(this.id));
+        movieId=(TextView) mRootView.findViewById(R.id.details_id);
+        movieId.setText(Long.toString(this.id));
 
 
 
