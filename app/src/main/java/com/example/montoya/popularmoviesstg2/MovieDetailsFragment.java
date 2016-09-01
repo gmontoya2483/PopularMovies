@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,7 +85,7 @@ public class MovieDetailsFragment extends Fragment{
             this.releaseDate=intent.getStringExtra("RELEASE_DATE");
             this.userRating=intent.getStringExtra("USER_RATING");
 
-            System.out.println(intent.getDataString());
+            Log.e("URI RECIBIDA POR INTENT",intent.getDataString());
         }
 
     }
