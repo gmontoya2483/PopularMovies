@@ -64,7 +64,32 @@ public class Movie {
     }
 
 
+    //this methods creates a Movie Object from a Cursor
+    // If the cursor has more than 1 records or the cursor is empty its returns a Movie id=-1L.
+    public Movie (Cursor cursor) {
 
+        this.id=-1L;
+        this.title=null;
+        this.imageThumbnail=null;
+        this.sysnopsis=null;
+        this.userRating=null;
+        this.releaseDate=null;
+
+        if (cursor.getCount() == 1 && cursor.moveToFirst()) {
+
+            this.id=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID));
+            this.title=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE));
+            this.imageThumbnail=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL));
+            this.sysnopsis=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS));
+            this.userRating=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING));
+            this.releaseDate=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE));
+
+
+        }
+
+
+
+    }
 
 
 

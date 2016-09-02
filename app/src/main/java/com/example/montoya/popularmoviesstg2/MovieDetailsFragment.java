@@ -16,7 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
-import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
+import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -24,13 +24,7 @@ import com.squareup.picasso.Picasso;
  */
 public class MovieDetailsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
-
-    private Long id;
-    private String title;
-    private String synopsis;
-    private String image;
-    private String releaseDate;
-    private String userRating;
+    Movie mMovie;
     private Uri movieUri;
 
 
@@ -58,7 +52,9 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
 
-
+    /**
+     * Fragment overrided methods
+     */
 
 
     @Override
@@ -93,15 +89,34 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     }
 
 
+    /**
+     * Loader Manager overrided methods
+     */
 
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        getIntentParameter();
+        return new CursorLoader(getActivity(),movieUri,null,null,null,null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+        mMovie=new Movie(data);
+        setLayoutValues();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
 
 
-
-
-
-
-
+    /*
+    *  Helper Methods
+    */
 
 
 
@@ -120,62 +135,28 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     }
 
-    private void setLayoutValues(Cursor cursor){
 
-        if (cursor.moveToFirst()){
-
-
-
-            this.id=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID));
-            this.title = cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE));
-            this.synopsis=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS));
-            this.image=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL));
-            this.releaseDate=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE));
-            this.userRating=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING));
-
-
+    private void setLayoutValues(){
 
 
             //Set the image
-            String imagePath= TheMovieDB.BuildImageUrl(TheMovieDB.IMAGE_SIZE_W500,this.image);
+            String imagePath= TheMovieDB.BuildImageUrl(TheMovieDB.IMAGE_SIZE_W500,mMovie.getImageThumbnail());
             Picasso.with(getActivity()).load(imagePath).into(movieImage);
 
             //Set the movie title
-
-            movieTitle.setText(this.title);
-
+            movieTitle.setText(mMovie.getTitle());
 
             //Set the movie release Date
-
-            movieReleaseDate.setText(this.releaseDate);
-
+            movieReleaseDate.setText(mMovie.getReleaseDate());
 
             //Set the movie Rating
-
-            movieRating.setText(this.userRating);
-
+            movieRating.setText(mMovie.getUserRating());
 
             //Set the movie id
-
-            movieId.setText(Long.toString(this.id));
-
-
-
+            movieId.setText(Long.toString(mMovie.getId()));
 
             //Set the movie Synopsis
-
-            movieSynopsis.setText(this.synopsis);
-
-
-
-
-
-        }
-
-
-
-
-
+            movieSynopsis.setText(mMovie.getSysnopsis());
 
     }
 
@@ -203,20 +184,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        getIntentParameter();
-        return new CursorLoader(getActivity(),movieUri,null,null,null,null);
-    }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        setLayoutValues(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
 }
