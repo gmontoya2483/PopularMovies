@@ -1,8 +1,10 @@
-package com.example.montoya.popularmoviesstg2;
+package com.example.montoya.popularmoviesstg2.view;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import com.example.montoya.popularmoviesstg2.R;
 
 public class MovieDetailsActivity extends AppCompatActivity {
 

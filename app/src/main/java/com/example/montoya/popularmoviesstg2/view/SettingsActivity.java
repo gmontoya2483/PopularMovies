@@ -1,4 +1,4 @@
-package com.example.montoya.popularmoviesstg2;
+package com.example.montoya.popularmoviesstg2.view;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 
+import com.example.montoya.popularmoviesstg2.R;
+
 public class SettingsActivity extends PreferenceActivity {
 
 
 
-    private static int prefs=R.xml.pref_general;
+    private static int prefs= R.xml.pref_general;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -23,6 +23,8 @@ public class PopularMoviesProvider extends ContentProvider {
     //Codes for the UriMatcher
     public static final int MOVIE=100;
     public static final int MOVIE_WITH_ID=110;
+    public static final int FAVORITE=200;
+    public static final int FAVORITE_WITH_ID=210;
 
 
 
@@ -41,12 +43,8 @@ public class PopularMoviesProvider extends ContentProvider {
         matcher.addURI(authority, PopularMoviesContract.PATH_MOVIES + "/#", MOVIE_WITH_ID);
         matcher.addURI(authority, PopularMoviesContract.PATH_MOVIES, MOVIE);
 
-
-
-
-
-
-
+        matcher.addURI(authority, PopularMoviesContract.PATH_FAVORITES + "/#",FAVORITE_WITH_ID);
+        matcher.addURI(authority, PopularMoviesContract.PATH_FAVORITES, FAVORITE);
 
         return matcher;
 
@@ -76,6 +74,12 @@ public class PopularMoviesProvider extends ContentProvider {
                 return PopularMoviesContract.MoviesEntry.CONTENT_ITEM_TYPE;
             case MOVIE:
                 return PopularMoviesContract.MoviesEntry.CONTENT_DIR_TYPE;
+
+            case FAVORITE_WITH_ID:
+                return PopularMoviesContract.FavoritesEntry.CONTENT_ITEM_TYPE;
+            case FAVORITE:
+                return PopularMoviesContract.FavoritesEntry.CONTENT_DIR_TYPE;
+
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -114,6 +118,28 @@ public class PopularMoviesProvider extends ContentProvider {
                 retCursor=queryMovieById(movie_id);
                 break;
             }
+
+            case FAVORITE:
+                retCursor=mPopularMoviesDbHelper.getReadableDatabase().query(
+                        PopularMoviesContract.FavoritesEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+
+            case FAVORITE_WITH_ID:
+            {
+                String movie_id= String.valueOf(ContentUris.parseId(uri));
+                retCursor=queryFavoriteById(movie_id);
+                break;
+            }
+
+
+
             default:
 
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -140,6 +166,11 @@ public class PopularMoviesProvider extends ContentProvider {
                 insertedUri=insertMovie(values);
                 break;
 
+
+            case FAVORITE:
+                insertedUri=insertFavorite(values);
+                break;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: "+uri);
 
@@ -163,6 +194,11 @@ public class PopularMoviesProvider extends ContentProvider {
         switch (match){
             case MOVIE:
                 rowsDeleted=db.delete(PopularMoviesContract.MoviesEntry.TABLE_NAME,selection,selectionArgs);
+                break;
+
+            case FAVORITE_WITH_ID:
+                String movie_id= String.valueOf(ContentUris.parseId(uri));
+                rowsDeleted=deleteFavorite(movie_id);
                 break;
 
             default:
@@ -301,6 +337,88 @@ public class PopularMoviesProvider extends ContentProvider {
 
     }
 
+
+
+    private Cursor queryFavoriteById (String id){
+
+        Cursor cursor;
+
+        SQLiteDatabase db=mPopularMoviesDbHelper.getReadableDatabase();
+        if (db.isOpen()){
+
+            String SQLStatment="SELECT * from "+PopularMoviesContract.FavoritesEntry.TABLE_NAME+" WHERE _id="+id;
+
+            cursor=db.rawQuery(SQLStatment,null);
+
+        }else{
+            cursor=null;
+            Log.e(LOG_TAG,"database could not be opened");
+        }
+
+
+        return cursor;
+
+
+    }
+
+
+
+    private Uri insertFavorite(ContentValues values){
+
+        Uri insertedMovieUri=null;
+        Long insertedMovieId;
+
+
+        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+        if (db.isOpen()){
+            insertedMovieId=db.insert(PopularMoviesContract.FavoritesEntry.TABLE_NAME,null,values);
+            if(insertedMovieId!=-1){
+
+                insertedMovieUri=PopularMoviesContract.FavoritesEntry.buildFavoriteByIdUri(insertedMovieId);
+
+
+            }else{
+                insertedMovieUri=null;
+                Log.e(LOG_TAG,"Movie could not be inserted");
+            }
+
+
+        }else{
+            insertedMovieUri=null;
+            Log.e(LOG_TAG,"database could not be opened");
+        }
+
+
+        return insertedMovieUri;
+
+
+    }
+
+
+    private int deleteFavorite(String id){
+        int deletedRecords=-1;
+
+        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+        if (db.isOpen()){
+
+            deletedRecords=db.delete(PopularMoviesContract.FavoritesEntry.TABLE_NAME,PopularMoviesContract.FavoritesEntry._ID+"=?",new String[]{id});
+
+
+            if(deletedRecords!=1){
+
+                Log.e(LOG_TAG,"There was a problem deleting the Movie from the favorite list.");
+
+
+            }
+        }else{
+            Log.e(LOG_TAG,"database could not be opened");
+        }
+
+
+
+        return  deletedRecords;
+
+    }
 
 
 

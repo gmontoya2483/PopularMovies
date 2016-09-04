@@ -1,4 +1,4 @@
-package com.example.montoya.popularmoviesstg2;
+package com.example.montoya.popularmoviesstg2.view;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.controler.MovieCursorAdapter;
 import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
 import com.example.montoya.popularmoviesstg2.model.Movie;
@@ -28,7 +29,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
     private final String LOG_TAG=MoviesFragment.class.getSimpleName();
 
-    //private CustomGridArrayAdapter myMovieAdapter;  //To use the customgrid Array Adapter
+
     private MovieCursorAdapter myMovieAdapter;
     private GridView myMovieListView;
     private ArrayList<Movie> myMovieList=new ArrayList<Movie>();

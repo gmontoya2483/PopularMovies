@@ -84,6 +84,25 @@ public class TestUtilities extends AndroidTestCase{
     }
 
 
+    static int deleteAllFavoritesRecords(Context context){
+
+        Cursor cursor;
+        SQLiteDatabase db=new PopularMoviesDbHelper(context).getWritableDatabase();
+        int qtyOfDeletedRecords=db.delete(PopularMoviesContract.FavoritesEntry.TABLE_NAME,null,null);
+
+        cursor=db.rawQuery("SELECT "+PopularMoviesContract.FavoritesEntry._ID+" FROM "+PopularMoviesContract.FavoritesEntry.TABLE_NAME,null);
+        assertFalse("Error: DeleteAllFavorites - No all movie records were deleted",cursor.moveToFirst());
+
+        db.close();
+
+        return qtyOfDeletedRecords;
+
+
+
+
+    }
+
+
 
     static ArrayList<Movie> generateFakeArrayList (int qtyOfMovies){
         ArrayList<Movie> movies=new ArrayList<Movie>();

@@ -37,10 +37,23 @@ public class PopularMoviesDbHelper extends SQLiteOpenHelper {
                 ") ";
 
 
+        final String SQL_CREATE_FAVORITES_TABLE=
+                "CREATE TABLE "+ PopularMoviesContract.FavoritesEntry.TABLE_NAME +
+                        " ("+
+                        PopularMoviesContract.FavoritesEntry._ID + " INTEGER PRIMARY KEY, "+
+                        PopularMoviesContract.FavoritesEntry.COULUMN_MOVIE_TITLE + " TEXT NOT NULL, "+
+                        PopularMoviesContract.FavoritesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL + " TEXT NOT NULL, "+
+                        PopularMoviesContract.FavoritesEntry.COULUMN_MOVIE_SYSNOPSIS + " TEXT NOT NULL, "+
+                        PopularMoviesContract.FavoritesEntry.COULUMN_MOVIE_USER_RATING + " TEXT NOT NULL, "+
+                        PopularMoviesContract.FavoritesEntry.COULUMN_MOVIE_RELEASE_DATE + " TEXT NOT NULL "+
+                        ") ";
+
+
 
 
 
         db.execSQL(SQL_CREATE_MOVIES_TABLE);
+        db.execSQL(SQL_CREATE_FAVORITES_TABLE);
 
 
 
@@ -58,6 +71,9 @@ public class PopularMoviesDbHelper extends SQLiteOpenHelper {
 
 
         db.execSQL("DROP TABLE IF EXISTS " + PopularMoviesContract.MoviesEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PopularMoviesContract.FavoritesEntry.TABLE_NAME);
+
+
         onCreate(db);
 
     }

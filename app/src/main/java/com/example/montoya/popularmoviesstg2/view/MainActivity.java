@@ -1,4 +1,4 @@
-package com.example.montoya.popularmoviesstg2;
+package com.example.montoya.popularmoviesstg2.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.example.montoya.popularmoviesstg2.R;
 
 public class MainActivity extends AppCompatActivity {
     private final String LOG_TAG=MainActivity.class.getSimpleName();

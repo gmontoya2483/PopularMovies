@@ -1,4 +1,4 @@
-package com.example.montoya.popularmoviesstg2;
+package com.example.montoya.popularmoviesstg2.view;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
 import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.squareup.picasso.Picasso;

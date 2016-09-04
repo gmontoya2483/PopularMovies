@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 
-import com.example.montoya.popularmoviesstg2.CustomGridArrayAdapter;
 import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.model.Movie;
 
@@ -21,9 +20,9 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,Void> {
     private TheMovieDB theMDB = new TheMovieDB();
     private final Context mContext;
     private ArrayList<Movie> myMovieList=new ArrayList<Movie>();
-    //private ArrayAdapter<Movie> mMovieAdapter;
 
-    private CustomGridArrayAdapter  mMovieAdapter;
+
+
 
 
 
@@ -64,10 +63,7 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,Void> {
             Movie.bulkInsertMovies(mContext,myMovieList);
 
 
-            // get data from the Database
-            //TODO Verify if this step makes sence
-            //myMovieList=null;
-            //myMovieList=Movie.getAllMoviesArrayList(mContext);
+
 
 
 

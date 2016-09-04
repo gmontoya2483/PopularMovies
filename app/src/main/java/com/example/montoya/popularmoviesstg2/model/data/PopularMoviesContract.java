@@ -101,6 +101,19 @@ public class PopularMoviesContract {
 
 
 
+        public static Uri buildFavoriteByIdUri(long id){
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(id)).build();
+
+
+        }
+
+        public static Uri buildAllFavoritesUri() {
+            return CONTENT_URI;
+        }
+
+
+
+
     }
 
 

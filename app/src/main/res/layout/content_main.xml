@@ -7,7 +7,7 @@
     android:padding="@dimen/activity_vertical_margin"
     android:orientation="horizontal"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.montoya.popularmoviesstg2.MainActivity"
+    tools:context=".view.MainActivity"
     tools:showIn="@layout/activity_main">
 
 
@@ -16,7 +16,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/moveies_fragment"
-        android:name="com.example.montoya.popularmoviesstg2.MoviesFragment"
+        android:name="com.example.montoya.popularmoviesstg2.view.MoviesFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
