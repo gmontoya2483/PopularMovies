@@ -34,13 +34,30 @@ public class Movie {
 
     // This constructor receives a Movie ID andthe context and creates a Movie Objects from the database
     // If the user ID is not found in the database it set id= -1L
-    public Movie(Context context, long id){
+    public Movie(Context context, long id,String path){
 
         Cursor cursor;
-        Uri uriMovieByID=PopularMoviesContract.MoviesEntry.buildMoviebyIdUri(id);
-        cursor=context.getContentResolver().query(uriMovieByID,null,null,null,null);
+        Uri uriMovieByID;
 
-        if (cursor.getCount()!=1){
+        switch (path){
+            case PopularMoviesContract.PATH_MOVIES:
+                uriMovieByID=PopularMoviesContract.MoviesEntry.buildMoviebyIdUri(id);
+                cursor=context.getContentResolver().query(uriMovieByID,null,null,null,null);
+                break;
+            case PopularMoviesContract.PATH_FAVORITES:
+                uriMovieByID=PopularMoviesContract.FavoritesEntry.buildFavoriteByIdUri(id);
+                cursor=context.getContentResolver().query(uriMovieByID,null,null,null,null);
+                break;
+            default:
+                cursor=null;
+                break;
+
+
+        }
+
+
+
+        if (cursor==null ||cursor.getCount()!=1){
             this.id=-1L;
             this.title=null;
             this.imageThumbnail=null;
@@ -59,7 +76,11 @@ public class Movie {
 
         }
 
-        cursor.close();
+        if (cursor!=null){
+            cursor.close();
+        }
+
+
 
     }
 
@@ -118,19 +139,60 @@ public class Movie {
         return releaseDate;
     }
 
+    public Boolean getIsFavorite(Context context){
+        boolean isFavorite=false;
+        Uri movieUri=PopularMoviesContract.FavoritesEntry.buildFavoriteByIdUri(this.id);
+        Cursor cursor;
+
+        cursor=context.getContentResolver().query(movieUri,null,null,null,null);
+        if (cursor!=null && cursor.getCount()==1){
+            isFavorite=true;
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return isFavorite;
+    }
+
+
+    public void setToFavorite(Context context){
+
+        Uri InsertFavoriteUri=PopularMoviesContract.FavoritesEntry.buildAllFavoritesUri();
+        if (!getIsFavorite(context)){
+            Uri inserted=context.getContentResolver().insert(InsertFavoriteUri, this.getMovieValues());
+
+        }else{
+            PopularMoviesContract.FavoritesEntry.buildFavoriteByIdUri(this.getId());
+        }
+
+
+
+    }
+
+
+    public void removeFromFavorite(Context context){
+        Uri movieUri=PopularMoviesContract.FavoritesEntry.buildFavoriteByIdUri(this.id);
+
+        if(getIsFavorite(context)){
+            int delete = context.getContentResolver().delete(movieUri, null, null);
+        }
+
+    }
+
+
 
 
     public ContentValues getMovieValues (){
 
-        ContentValues testValues=new ContentValues();
-        testValues.put(PopularMoviesContract.MoviesEntry._ID,this.getId());
-        testValues.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE,this.getTitle());
-        testValues.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL,this.getImageThumbnail());
-        testValues.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS,this.getSysnopsis());
-        testValues.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING,this.getUserRating());
-        testValues.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE,this.getReleaseDate());
+        ContentValues values=new ContentValues();
+        values.put(PopularMoviesContract.MoviesEntry._ID,this.getId());
+        values.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE,this.getTitle());
+        values.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL,this.getImageThumbnail());
+        values.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS,this.getSysnopsis());
+        values.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING,this.getUserRating());
+        values.put(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE,this.getReleaseDate());
 
-        return testValues;
+        return values;
 
     }
 
@@ -156,8 +218,6 @@ public class Movie {
     private boolean verifyAttributes(){
 
         boolean isOK=true;
-
-
 
         if (this.getTitle()== null){
             isOK=false;
@@ -217,7 +277,6 @@ public class Movie {
 
 
 
-
     public static int bulkInsertMovies (Context context,ArrayList<Movie> movies){
         int quantityOfInsertedMovies=0;
         int quantityOfMovies=movies.size();
@@ -249,6 +308,17 @@ public class Movie {
     }
 
 
+    public static Cursor getAllFavorites (Context context){
+        Cursor cursor;
+        Uri allFavoritesUri=PopularMoviesContract.FavoritesEntry.buildAllFavoritesUri();
+        cursor=context.getContentResolver().query(allFavoritesUri,null,null,null,null);
+
+        return cursor;
+    }
+
+
+
+
     public static int deleteAllMovies(Context context){
         int quantityOfDeletedMovies=0;
         Uri allMoviesUri=PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
@@ -264,30 +334,52 @@ public class Movie {
 
 
 
-    public static ArrayList<Movie> getAllMoviesArrayList (Context context){
+    public static ArrayList<Movie> getAllMoviesArrayList (Context context,String path){
         ArrayList<Movie> movieArrayList=new ArrayList<Movie>();
         Cursor cursor;
 
 
-        cursor=getAllMovies(context);
-
-        while (cursor.moveToNext()){
-            movieArrayList.add(new Movie(
-                    cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID)),
-                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE)),
-                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL)),
-                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS)),
-                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING)),
-                    cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE))
-
-            ));
-
+        switch (path){
+            case PopularMoviesContract.PATH_MOVIES:
+                cursor=getAllMovies(context);
+                break;
+            case PopularMoviesContract.PATH_FAVORITES:
+                cursor=getAllFavorites(context);
+                break;
+            default:
+                cursor=null;
+                break;
 
         }
 
 
+        if (cursor!=null){
+            while (cursor.moveToNext()){
+                movieArrayList.add(new Movie(
+                        cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID)),
+                        cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE)),
+                        cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL)),
+                        cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS)),
+                        cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING)),
+                        cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE))
+
+                ));
+
+
+            }
+
+        }else{
+            movieArrayList=null;
+        }
+
         return movieArrayList;
+
     }
+
+
+
+
+
 
 
 

@@ -1,14 +1,17 @@
 package com.example.montoya.popularmoviesstg2;
 
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 
 import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
+import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesProvider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by montoya on 25.08.2016.
@@ -29,8 +32,8 @@ public class TestMovieClass extends AndroidTestCase{
 
     }
 
-    //Test the constructor which receives a context and a Long and creates a Movie from the DB
-    public void testNewMovieById(){
+    //Test the constructor which receives a context, an id and a Path and creates a Movie instance from the DB
+    public void testNewMovieByIdPATH_MOVIES(){
 
         final long INVALID_ID=200L;
         final long VALID_ID=100L;
@@ -46,7 +49,7 @@ public class TestMovieClass extends AndroidTestCase{
 
 
         //Verify that if the record doesn´t exists the Movie ID is equal to -1 and all its attributes are set to null
-        Movie invalidMovie=new Movie(mContext,INVALID_ID);
+        Movie invalidMovie=new Movie(mContext,INVALID_ID,PopularMoviesContract.PATH_MOVIES);
         assertEquals("Error: Returned id is not equal to -1",invalidMovie.getId(),-1L);
         assertTrue("Error: Title is not null", invalidMovie.getTitle()==null);
         assertTrue("Error: Thumbnail image is not null",invalidMovie.getImageThumbnail()==null);
@@ -57,7 +60,7 @@ public class TestMovieClass extends AndroidTestCase{
 
 
         //Verify that if the record exists the Movie ID is equal to the ID sent by parameter and all its attributes are set correctly
-        Movie validMovie=new Movie(mContext,VALID_ID);
+        Movie validMovie=new Movie(mContext,VALID_ID,PopularMoviesContract.PATH_MOVIES);
         assertEquals("Error: Returned id is not equal to -1",validMovie.getId(),VALID_ID);
         assertEquals("Error: Title is not the correct", validMovie.getTitle(),TestUtilities.BASE_TITLE+" "+VALID_ID);
         assertEquals("Error: Thumbnail image is not the correct",validMovie.getImageThumbnail(),TestUtilities.BASE_IMAGE_THUMNAIL+" "+VALID_ID);
@@ -73,13 +76,133 @@ public class TestMovieClass extends AndroidTestCase{
         validMovie=null;
         invalidMovie=null;
 
+    }
+
+    public void testNewMovieByIdPATH_FAVORITES(){
+
+        final long INVALID_ID=200L;
+        final long VALID_ID=1L;
+
+
+
+        ContentValues movieContentValues;
+        HashMap<Long,Uri> QueryUris=new HashMap<Long,Uri>();
+        Uri allFavoritesUri;
+        UriMatcher testMatcher= PopularMoviesProvider.buildUriMatcher();
+        Movie movie;
+
+
+        //Create an ArrayList with several Movies
+        HashMap<Long,Movie> mMovies=new HashMap<Long,Movie>();
+        mMovies.put(1L,new Movie(1L,TestUtilities.BASE_TITLE+" "+1L,TestUtilities.BASE_IMAGE_THUMNAIL+" "+1L,TestUtilities.BASE_SYSNOPSIS+" "+1L,TestUtilities.BASE_USR_RATING+" "+1L,TestUtilities.BASE_RELEASE_DATE+" "+1L));
+        mMovies.put(2L,new Movie(2L,TestUtilities.BASE_TITLE+" "+2L,TestUtilities.BASE_IMAGE_THUMNAIL+" "+2L,TestUtilities.BASE_SYSNOPSIS+" "+2L,TestUtilities.BASE_USR_RATING+" "+2L,TestUtilities.BASE_RELEASE_DATE+" "+2L));
+        mMovies.put(3L,new Movie(3L,TestUtilities.BASE_TITLE+" "+3L,TestUtilities.BASE_IMAGE_THUMNAIL+" "+3L,TestUtilities.BASE_SYSNOPSIS+" "+3L,TestUtilities.BASE_USR_RATING+" "+3L,TestUtilities.BASE_RELEASE_DATE+" "+3L));
+        mMovies.put(4L,new Movie(4L,TestUtilities.BASE_TITLE+" "+4L,TestUtilities.BASE_IMAGE_THUMNAIL+" "+4L,TestUtilities.BASE_SYSNOPSIS+" "+4L,TestUtilities.BASE_USR_RATING+" "+4L,TestUtilities.BASE_RELEASE_DATE+" "+4L));
+
+        //Delete all favorites records to get an empty Favorites table
+        TestUtilities.deleteAllFavoritesRecords(mContext);
+
+
+        //Insert all the Movies and get a reference to its query string
+
+        for (long i=1;i<=mMovies.size();i++)
+        {
+            movie=mMovies.get(i);
+            movieContentValues = movie.getMovieValues();
+            QueryUris.put(movie.getId(),mContext.getContentResolver().insert (PopularMoviesContract.FavoritesEntry.buildAllFavoritesUri(), movieContentValues));
+        }
 
 
 
 
+        //Verify that if the record doesn´t exists the Movie ID is equal to -1 and all its attributes are set to null
+        Movie invalidMovie=new Movie(mContext,INVALID_ID,PopularMoviesContract.PATH_FAVORITES);
+        assertEquals("Error: Returned id is not equal to -1",invalidMovie.getId(),-1L);
+        assertTrue("Error: Title is not null", invalidMovie.getTitle()==null);
+        assertTrue("Error: Thumbnail image is not null",invalidMovie.getImageThumbnail()==null);
+        assertTrue("Error: release date is not null",invalidMovie.getReleaseDate()==null);
+        assertTrue("Error: user rating is not null",invalidMovie.getUserRating()==null);
+        assertTrue("Error: Sysnopsis is not null",invalidMovie.getSysnopsis()==null);
 
+
+
+        //Verify that if the record exists the Movie ID is equal to the ID sent by parameter and all its attributes are set correctly
+        Movie validMovie=new Movie(mContext,VALID_ID,PopularMoviesContract.PATH_FAVORITES);
+        assertEquals("Error: Returned id is not equal to -1",validMovie.getId(),VALID_ID);
+        assertEquals("Error: Title is not the correct", validMovie.getTitle(),TestUtilities.BASE_TITLE+" "+VALID_ID);
+        assertEquals("Error: Thumbnail image is not the correct",validMovie.getImageThumbnail(),TestUtilities.BASE_IMAGE_THUMNAIL+" "+VALID_ID);
+        assertEquals("Error: release date is not the correct",validMovie.getReleaseDate(),TestUtilities.BASE_RELEASE_DATE+" "+VALID_ID);
+        assertEquals("Error: user rating is not correct",validMovie.getUserRating(),TestUtilities.BASE_USR_RATING+" "+VALID_ID);
+        assertEquals("Error: Sysnopsis is not correct",validMovie.getSysnopsis(),TestUtilities.BASE_SYSNOPSIS+" "+VALID_ID);
+
+
+
+
+        //delete all the Movie Records for further tests
+        TestUtilities.deleteAllFavoritesRecords(mContext);
+        validMovie=null;
+        invalidMovie=null;
 
     }
+
+    public void testNewMovieByIdINVALID_PATH(){
+
+        final long INVALID_ID=200L;
+        final long VALID_ID=1L;
+
+
+
+        ContentValues movieContentValues;
+        HashMap<Long,Uri> QueryUris=new HashMap<Long,Uri>();
+        Uri allFavoritesUri;
+        UriMatcher testMatcher= PopularMoviesProvider.buildUriMatcher();
+        Movie movie;
+
+
+        //Create an ArrayList with several Movies
+        HashMap<Long,Movie> mMovies=new HashMap<Long,Movie>();
+        mMovies.put(1L,new Movie(1L,TestUtilities.BASE_TITLE+" "+1L,TestUtilities.BASE_IMAGE_THUMNAIL+" "+1L,TestUtilities.BASE_SYSNOPSIS+" "+1L,TestUtilities.BASE_USR_RATING+" "+1L,TestUtilities.BASE_RELEASE_DATE+" "+1L));
+        mMovies.put(2L,new Movie(2L,TestUtilities.BASE_TITLE+" "+2L,TestUtilities.BASE_IMAGE_THUMNAIL+" "+2L,TestUtilities.BASE_SYSNOPSIS+" "+2L,TestUtilities.BASE_USR_RATING+" "+2L,TestUtilities.BASE_RELEASE_DATE+" "+2L));
+        mMovies.put(3L,new Movie(3L,TestUtilities.BASE_TITLE+" "+3L,TestUtilities.BASE_IMAGE_THUMNAIL+" "+3L,TestUtilities.BASE_SYSNOPSIS+" "+3L,TestUtilities.BASE_USR_RATING+" "+3L,TestUtilities.BASE_RELEASE_DATE+" "+3L));
+        mMovies.put(4L,new Movie(4L,TestUtilities.BASE_TITLE+" "+4L,TestUtilities.BASE_IMAGE_THUMNAIL+" "+4L,TestUtilities.BASE_SYSNOPSIS+" "+4L,TestUtilities.BASE_USR_RATING+" "+4L,TestUtilities.BASE_RELEASE_DATE+" "+4L));
+
+        //Delete all favorites records to get an empty Favorites table
+        TestUtilities.deleteAllFavoritesRecords(mContext);
+
+
+        //Insert all the Movies and get a reference to its query string
+
+        for (long i=1;i<=mMovies.size();i++)
+        {
+            movie=mMovies.get(i);
+            movieContentValues = movie.getMovieValues();
+            QueryUris.put(movie.getId(),mContext.getContentResolver().insert (PopularMoviesContract.FavoritesEntry.buildAllFavoritesUri(), movieContentValues));
+        }
+
+        //Verify that if the record doesn´t exists the Movie ID is equal to -1 and all its attributes are set to null
+        Movie invalidMovie=new Movie(mContext,VALID_ID,"INVALID_PATH");
+        assertEquals("Error: Returned id is not equal to -1",invalidMovie.getId(),-1L);
+        assertTrue("Error: Title is not null", invalidMovie.getTitle()==null);
+        assertTrue("Error: Thumbnail image is not null",invalidMovie.getImageThumbnail()==null);
+        assertTrue("Error: release date is not null",invalidMovie.getReleaseDate()==null);
+        assertTrue("Error: user rating is not null",invalidMovie.getUserRating()==null);
+        assertTrue("Error: Sysnopsis is not null",invalidMovie.getSysnopsis()==null);
+
+
+        //delete all the Movie Records for further tests
+        TestUtilities.deleteAllFavoritesRecords(mContext);
+
+        invalidMovie=null;
+
+    }
+
+
+
+
+
+
+
+
 
 
     //Verify insert a movie in the database
@@ -98,7 +221,7 @@ public class TestMovieClass extends AndroidTestCase{
 
 
         //Verify that the movie was inserted correctly
-        Movie insertedMovie= new Movie(mContext,ID);
+        Movie insertedMovie= new Movie(mContext,ID,PopularMoviesContract.PATH_MOVIES);
         assertTrue("Error: Movie was nor inseted correctly",insertedMovie.isEqual(movieToInsert));
 
 
@@ -177,5 +300,58 @@ public class TestMovieClass extends AndroidTestCase{
 
 
     }
+
+
+
+
+    //Test the constructor which receives a context, an id and a Path and creates a Movie instance from the DB
+    public void testFavorites() {
+
+
+
+
+        //Insert new Movies into the DB
+        final int QTY_OF_RECORDS = 154;
+        ContentValues values[] = TestUtilities.generateFakeContentValueArray(QTY_OF_RECORDS);
+        Uri allMoviesUri = PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
+        mContext.getContentResolver().bulkInsert(allMoviesUri, values);
+
+
+        //Add movies to favorite
+        Movie movie1=new Movie(mContext,100L,PopularMoviesContract.PATH_MOVIES);
+
+        //Movie is not in favorites
+        assertFalse("ERROR: Movie shouldn´t be in favorites ",movie1.getIsFavorite(mContext));
+
+        //Set the movie into favorites
+        movie1.setToFavorite(mContext);
+        assertTrue("ERROR: Movie should be in favorites ",movie1.getIsFavorite(mContext));
+
+        //Set the movie back to favorites to check that systen doesnt crash
+        movie1.setToFavorite(mContext);
+        assertTrue("ERROR: Movie should be in favorites ",movie1.getIsFavorite(mContext));
+
+
+        //Remove from favorites
+        movie1.removeFromFavorite(mContext);
+        assertFalse("ERROR: Movie shouldn´t be in favorites ",movie1.getIsFavorite(mContext));
+
+        //Remove the movie once again from favorites to check the syztem doesnt crash
+        movie1.removeFromFavorite(mContext);
+        assertFalse("ERROR: Movie shouldn´t be in favorites ",movie1.getIsFavorite(mContext));
+
+
+
+        //delete all Movie records
+        TestUtilities.deleteAllMoviesRecords(mContext);
+        TestUtilities.deleteAllFavoritesRecords(mContext);
+
+
+
+
+    }
+
+
+
 
 }
