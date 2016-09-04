@@ -34,7 +34,7 @@ public class MovieCursorAdapter extends CursorAdapter{
 
         ImageView movieImage=(ImageView) view.findViewById(R.id.movie_list_Item_ImgView);
         //ImageView movieImage=(ImageView) view;
-        String imagePath= TheMovieDB.BuildImageUrl(TheMovieDB.IMAGE_SIZE_W342,image);
+        String imagePath= TheMovieDB.BuildImageUrl(TheMovieDB.IMAGE_SIZE_W500,image);
 
         Picasso.with(context)
                 .load(imagePath)

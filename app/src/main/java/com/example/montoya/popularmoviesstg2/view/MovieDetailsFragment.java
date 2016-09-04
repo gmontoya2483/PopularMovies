@@ -12,11 +12,13 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
+import com.example.montoya.popularmoviesstg2.controler.Utils;
 import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -27,6 +29,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     Movie mMovie;
     private Uri movieUri;
+    private boolean inFavorites;
 
 
 
@@ -37,6 +40,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private TextView movieSynopsis;
     private TextView movieRating;
     private TextView movieId;
+    private Button butonFavorites;
 
 
     private static final int MOVIE_DETAILS_LOADER = 1;
@@ -106,6 +110,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         mMovie=new Movie(data);
+
         setLayoutValues();
     }
 
@@ -148,7 +153,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             movieTitle.setText(mMovie.getTitle());
 
             //Set the movie release Date
-            movieReleaseDate.setText(mMovie.getReleaseDate());
+            movieReleaseDate.setText(Utils.getYear(mMovie.getReleaseDate()));
 
             //Set the movie Rating
             movieRating.setText(mMovie.getUserRating());
@@ -158,6 +163,21 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
             //Set the movie Synopsis
             movieSynopsis.setText(mMovie.getSysnopsis());
+
+
+        //Set the favorite button text
+        inFavorites=mMovie.getIsFavorite(getActivity());
+
+        if(!inFavorites){
+            butonFavorites.setText (R.string.btn_MarkAsFavorites);
+
+        }else{
+            butonFavorites.setText(R.string.btn_RemoveFavorites);
+
+        }
+
+
+
 
     }
 
@@ -180,6 +200,26 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
         //Set the movie Synopsis
         movieSynopsis=(TextView) mRootView.findViewById(R.id.details_synopsys);
+
+        //Set the Favorites Button
+        butonFavorites=(Button) mRootView.findViewById(R.id.button_favorites);
+        butonFavorites.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                if (inFavorites){
+                    mMovie.removeFromFavorite(getActivity());
+                    butonFavorites.setText(R.string.btn_MarkAsFavorites);
+                }else{
+                    mMovie.setToFavorite(getActivity());
+                    butonFavorites.setText(R.string.btn_RemoveFavorites);
+                }
+
+            }
+        });
+
+
+
 
     }
 

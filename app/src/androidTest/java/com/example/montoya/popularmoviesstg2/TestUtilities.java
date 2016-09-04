@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
+import com.example.montoya.popularmoviesstg2.controler.Utils;
 import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesDbHelper;
@@ -147,6 +148,20 @@ public class TestUtilities extends AndroidTestCase{
 
 
         return values;
+
+
+    }
+
+
+    public void testgetYear(){
+
+        String date="2015-08-23";
+        String year;
+
+
+        year=Utils.getYear(date);
+
+        assertEquals("Error el año no es el espeardo","2015",year);
 
 
     }

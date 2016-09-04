@@ -19,7 +19,9 @@
 
 
     <style name="detail_title">
-        <item name="android:textSize">20dp</item>
+        <item name="android:textSize">36dp</item>
+        <item name="android:background">@color/colorTitleBack</item>
+        <item name="android:textColor">@color/colorTitleFont</item>
 
     </style>
 

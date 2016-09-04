@@ -1,9 +1,11 @@
 package com.example.montoya.popularmoviesstg2.view;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -18,6 +20,7 @@ import android.widget.GridView;
 import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.controler.MovieCursorAdapter;
 import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
+import com.example.montoya.popularmoviesstg2.controler.Utils;
 import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 
@@ -34,6 +37,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     private GridView myMovieListView;
     private ArrayList<Movie> myMovieList=new ArrayList<Movie>();
     private static final int MOVIE_LOADER = 0;
+    private String mCurrentSelection;
 
 
 
@@ -45,6 +49,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCurrentSelection=Utils.getCurrentSelection(getActivity());
 
 
     }
@@ -115,14 +120,52 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onStart() {
         super.onStart();
-        TheMovieDB.updateMovies(getActivity());
+        //TheMovieDB.updateMovies(getActivity());
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        String selection=Utils.getCurrentSelection(getActivity());
+
+        if (!selection.equals(mCurrentSelection)){
+            mCurrentSelection=selection;
+            onSelectionChanged();
+
+
+        }
+
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri allMoviesUri= PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
+
+
+        Uri allMoviesUri;
+
+        //Get the selected sortby from the Shared Preferences
+
+        String endPointFilter= Utils.getCurrentSelection(getActivity());
+
+
+
+
+        //TODO Ver como reemplazar esto por los valores del file String
+        if(endPointFilter.equals("favorite_collection")){
+            allMoviesUri=PopularMoviesContract.FavoritesEntry.buildAllFavoritesUri();
+
+
+
+        }else{
+            allMoviesUri= PopularMoviesContract.MoviesEntry.buildAllMoviesUri();
+
+        }
+
+
+
+
+
         return new CursorLoader(getActivity(),allMoviesUri,null,null,null,null);
     }
 
@@ -138,4 +181,20 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         myMovieAdapter.swapCursor(null);
 
     }
+
+
+
+    public void onSelectionChanged(){
+        TheMovieDB.updateMovies(getActivity());
+        getLoaderManager().restartLoader(MOVIE_LOADER,null,this);
+
+    }
+
+
+
+
+
+
+
+
 }

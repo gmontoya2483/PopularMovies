@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.model.Movie;
@@ -43,38 +44,41 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,Void> {
 
 
         //Get the selected sortby from the Shared Preferences
-        SharedPreferences sharedPrefs= PreferenceManager.getDefaultSharedPreferences( mContext);
-        String endPointFilter=sharedPrefs.getString(
-                mContext.getString(R.string.pref_sort_by_key),
-                mContext.getString(R.string.pref_sort_by_most_popular));
-
-
-
-        String JsonMessage=theMDB.getDataFromInternet(endPointFilter);
-        ArrayList<Movie> myMovieList;
-
-        if (JsonMessage!=null){
-            myMovieList=new ArrayList<Movie>(theMDB.JSonParser(JsonMessage));
-
-            //Empty the movie table
-            Movie.deleteAllMovies(mContext);
-
-            //Bulk Insert the movies
-            Movie.bulkInsertMovies(mContext,myMovieList);
+        String endPointFilter=Utils.getCurrentSelection(mContext);
 
 
 
 
+        //TODO Ver como reemplazar esto por los valores del file String
+        if(!endPointFilter.equals("favorite_collection")){
 
 
-            return null;
+
+            String JsonMessage=theMDB.getDataFromInternet(endPointFilter);
+            ArrayList<Movie> myMovieList;
+
+            if (JsonMessage!=null){
+                myMovieList=new ArrayList<Movie>(theMDB.JSonParser(JsonMessage));
+
+                //Empty the movie table
+                Movie.deleteAllMovies(mContext);
+
+                //Bulk Insert the movies
+                Movie.bulkInsertMovies(mContext,myMovieList);
 
 
-        }else{
 
 
-            return null;
+            }
+
         }
+
+
+        return null;
+
+
+
+
 
     }
 

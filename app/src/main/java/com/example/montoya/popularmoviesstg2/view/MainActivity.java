@@ -1,16 +1,21 @@
 package com.example.montoya.popularmoviesstg2.view;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.montoya.popularmoviesstg2.R;
+import com.example.montoya.popularmoviesstg2.controler.Utils;
 
 public class MainActivity extends AppCompatActivity {
     private final String LOG_TAG=MainActivity.class.getSimpleName();
+    private final String MOVIESFRAGMENT_TAG = "MFTAG";
+    public String mSelection;
 
 
 
@@ -22,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        mSelection= Utils.getCurrentSelection(this);
+
+
 
 
     }
