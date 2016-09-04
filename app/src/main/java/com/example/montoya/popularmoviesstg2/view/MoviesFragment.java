@@ -50,6 +50,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCurrentSelection=Utils.getCurrentSelection(getActivity());
+        TheMovieDB.updateMovies(getActivity());
 
 
     }
@@ -78,18 +79,21 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                Uri SelectedMovieUri;
+
                 Cursor cursor=(Cursor) parent.getItemAtPosition(position);
                 if (cursor!=null){
                     Intent intent=new Intent(getContext(),MovieDetailsActivity.class);
 
-                    //intent.putExtra("ID",cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID)));
-                    //intent.putExtra("TITLE",cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_TITLE)));
-                    //intent.putExtra("RELEASE_DATE",cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_RELEASE_DATE)));
-                    //intent.putExtra("USER_RATING", cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_USER_RATING)));
-                    //intent.putExtra("SYNOPSIS", cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_SYSNOPSIS)));
-                    //intent.putExtra("IMAGE", cursor.getString(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry.COULUMN_MOVIE_IMAGE_THUMBNAIL)));
+                   if (mCurrentSelection.equals("favorite_collection")){
+                        SelectedMovieUri=PopularMoviesContract.FavoritesEntry.buildFavoriteByIdUri(cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.FavoritesEntry._ID)));
 
-                    Uri SelectedMovieUri=PopularMoviesContract.MoviesEntry.buildMoviesUri(cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID)));
+                    }else{
+                        SelectedMovieUri=PopularMoviesContract.MoviesEntry.buildMoviesUri(cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.MoviesEntry._ID)));
+
+                    }
+
+
                     intent.setData(SelectedMovieUri);
 
 

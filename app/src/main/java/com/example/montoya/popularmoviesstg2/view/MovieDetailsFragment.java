@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,6 +117,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        mMovie=null;
 
     }
 
@@ -207,13 +209,29 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
             @Override
             public void onClick(View view) {
-                if (inFavorites){
+
+                if (Utils.getCurrentSelection(getActivity()).equals("favorite_collection")){
                     mMovie.removeFromFavorite(getActivity());
-                    butonFavorites.setText(R.string.btn_MarkAsFavorites);
+                    butonFavorites.setVisibility(View.INVISIBLE);
+                    getLoaderManager().destroyLoader(MOVIE_DETAILS_LOADER);
+
                 }else{
-                    mMovie.setToFavorite(getActivity());
-                    butonFavorites.setText(R.string.btn_RemoveFavorites);
+
+                    if (inFavorites){
+                        mMovie.removeFromFavorite(getActivity());
+                        butonFavorites.setText(R.string.btn_MarkAsFavorites);
+
+                    }else{
+                        mMovie.setToFavorite(getActivity());
+                        butonFavorites.setText(R.string.btn_RemoveFavorites);
+
+                    }
+
+                    inFavorites=mMovie.getIsFavorite(getActivity());
+
                 }
+
+
 
             }
         });
