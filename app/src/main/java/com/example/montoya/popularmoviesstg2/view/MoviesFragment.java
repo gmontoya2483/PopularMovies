@@ -1,11 +1,9 @@
 package com.example.montoya.popularmoviesstg2.view;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -31,6 +29,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
 
     private final String LOG_TAG=MoviesFragment.class.getSimpleName();
+    private String FAVORITES_SELECTION;
 
 
     private MovieCursorAdapter myMovieAdapter;
@@ -49,6 +48,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FAVORITES_SELECTION= getResources().getString(R.string.pref_sort_by_favorite_collection);
         mCurrentSelection=Utils.getCurrentSelection(getActivity());
         TheMovieDB.updateMovies(getActivity());
 
@@ -85,7 +85,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
                 if (cursor!=null){
                     Intent intent=new Intent(getContext(),MovieDetailsActivity.class);
 
-                   if (mCurrentSelection.equals("favorite_collection")){
+                   if (mCurrentSelection.equals(FAVORITES_SELECTION)){
                         SelectedMovieUri=PopularMoviesContract.FavoritesEntry.buildFavoriteByIdUri(cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.FavoritesEntry._ID)));
 
                     }else{
@@ -155,8 +155,8 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
 
 
-        //TODO Ver como reemplazar esto por los valores del file String
-        if(endPointFilter.equals("favorite_collection")){
+
+        if(endPointFilter.equals(FAVORITES_SELECTION)){
             allMoviesUri=PopularMoviesContract.FavoritesEntry.buildAllFavoritesUri();
 
 

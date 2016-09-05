@@ -6,16 +6,18 @@ import android.preference.PreferenceManager;
 
 import com.example.montoya.popularmoviesstg2.R;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * Created by Gabriel on 04/09/2016.
  */
 public class Utils {
+
+
+
+
+
 
 
     public static String getYear(String date){

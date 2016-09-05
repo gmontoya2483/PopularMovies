@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +26,9 @@ import com.squareup.picasso.Picasso;
  * Created by montoya on 30.08.2016.
  */
 public class MovieDetailsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+
+    private String FAVORITES_SELECTION;
+    private final String LOG_TAG=MoviesFragment.class.getSimpleName();
 
     Movie mMovie;
     private Uri movieUri;
@@ -66,6 +68,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FAVORITES_SELECTION= getResources().getString(R.string.pref_sort_by_favorite_collection);
     }
 
     @Nullable
@@ -210,7 +213,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             @Override
             public void onClick(View view) {
 
-                if (Utils.getCurrentSelection(getActivity()).equals("favorite_collection")){
+                if (Utils.getCurrentSelection(getActivity()).equals(FAVORITES_SELECTION)){
                     mMovie.removeFromFavorite(getActivity());
                     butonFavorites.setVisibility(View.INVISIBLE);
                     getLoaderManager().destroyLoader(MOVIE_DETAILS_LOADER);
