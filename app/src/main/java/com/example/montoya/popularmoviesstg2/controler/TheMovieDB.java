@@ -55,6 +55,34 @@ public class TheMovieDB {
 
 
 
+    public URL BuildUriTrailers(Long id){
+
+
+        Uri buildUri= Uri.parse(BASE_URL).buildUpon()
+                .appendPath(MOVIE_PATH)
+                .appendPath(String.valueOf(id))
+                .appendPath(VIDEOS_PATH)
+                .appendQueryParameter(APPID_PARAM,API_KEY)
+                .build();
+
+
+        try {
+
+            URL url=new URL(buildUri.toString());
+            return url;
+        } catch (MalformedURLException e) {
+
+            Log.e(LOG_TAG,"Error:"+e.getStackTrace());
+            return null;
+        }
+
+
+    }
+
+
+
+
+
 
     public URL BuildUri(String endPointFilter){
 
