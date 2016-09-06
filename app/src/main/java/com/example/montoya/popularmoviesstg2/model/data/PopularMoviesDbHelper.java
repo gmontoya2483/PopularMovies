@@ -48,12 +48,27 @@ public class PopularMoviesDbHelper extends SQLiteOpenHelper {
                         PopularMoviesContract.FavoritesEntry.COULUMN_MOVIE_RELEASE_DATE + " TEXT NOT NULL "+
                         ") ";
 
+        final String SQL_CREATE_VIDEOS_TABLE=
+                "CREATE TABLE "+ PopularMoviesContract.VideosEntry.TABLE_NAME +
+                        " ("+
+                        PopularMoviesContract.VideosEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "+
+                        PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID+" INTEGER NOT NULL, "+
+                        PopularMoviesContract.VideosEntry.COLUMN_VIDEO_KEY + " TEXT UNIQUE NOT NULL, "+
+                        PopularMoviesContract.VideosEntry.COLUMN_VIDEO_NAME + " TEXT NOT NULL, "+
+                        PopularMoviesContract.VideosEntry.COLUMN_VIDEO_SITE+" TEXT NOT NULL,"+
+                        PopularMoviesContract.VideosEntry.COLUMN_VIDEO_TYPE + " TEXT NOT NULL "+
+                        ") ";
+
+
+
 
 
 
 
         db.execSQL(SQL_CREATE_MOVIES_TABLE);
         db.execSQL(SQL_CREATE_FAVORITES_TABLE);
+        db.execSQL(SQL_CREATE_VIDEOS_TABLE);
+        //db.execSQL("CREATE TABLE sqlite_sequence(name,seq)");
 
 
 
@@ -72,6 +87,13 @@ public class PopularMoviesDbHelper extends SQLiteOpenHelper {
 
         db.execSQL("DROP TABLE IF EXISTS " + PopularMoviesContract.MoviesEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + PopularMoviesContract.FavoritesEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + PopularMoviesContract.VideosEntry.TABLE_NAME);
+
+
+        //RESET VIDEO COUNTER
+        db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '"+PopularMoviesContract.VideosEntry.TABLE_NAME+"'");
+
+
 
 
         onCreate(db);

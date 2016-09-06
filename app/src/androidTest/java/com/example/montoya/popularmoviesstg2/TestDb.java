@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.Video;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesDbHelper;
 
@@ -290,6 +291,122 @@ public class TestDb extends AndroidTestCase{
 
 
     }
+
+
+    public void testTableVideoStructure() throws Throwable{
+
+
+        final HashSet<String> moviesColumnHashSet=new HashSet<String>();
+        moviesColumnHashSet.add(PopularMoviesContract.VideosEntry._ID);
+        moviesColumnHashSet.add(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID);
+        moviesColumnHashSet.add(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_KEY);
+        moviesColumnHashSet.add(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_NAME);
+        moviesColumnHashSet.add(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_SITE);
+        moviesColumnHashSet.add(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_TYPE);
+
+
+        SQLiteDatabase db=new PopularMoviesDbHelper(this.mContext).getReadableDatabase();
+        assertEquals("Error: Database is not opened correctly",true,db.isOpen());
+
+        Cursor cursor=db.rawQuery("PRAGMA table_info("+PopularMoviesContract.VideosEntry.TABLE_NAME+")",null);
+        assertTrue("Error: This means that we were unable to query the database for table information.",
+                cursor.moveToFirst());
+
+        int columnNameIndex= cursor.getColumnIndex("name");
+
+        do {
+            String columnName = cursor.getString(columnNameIndex);
+            moviesColumnHashSet.remove(columnName);
+        } while(cursor.moveToNext());
+
+        assertTrue("Error: The table "+PopularMoviesContract.VideosEntry.TABLE_NAME +" doesn't contain all of the required  columns",moviesColumnHashSet.isEmpty());
+
+        cursor.close();
+        db.close();
+    }
+
+
+    public void testInsertVideoIntoVideosTable(){
+
+
+
+
+        long videoRowId;
+        long video2RowId;
+        Video video =new Video(3214L,"fakeKey","fakeName","fakeSite","fakeType");
+        Video video2=new Video(3215L,"fakeKey","fakeName2","fakeSite2","fakeType2");
+
+
+        SQLiteDatabase db=new PopularMoviesDbHelper(this.mContext).getWritableDatabase();
+        assertEquals("Error: Database is not opened correctly",true,db.isOpen());
+
+
+        ContentValues testValues=video.getVideoValues();
+        videoRowId=db.insert(PopularMoviesContract.VideosEntry.TABLE_NAME,null,testValues);
+
+        //Verify that the Inserted Video ID is not -1L
+        assertFalse("Error: Expected Video ID is -1L: ",videoRowId==-1L);
+
+
+        Cursor cursor=db.rawQuery("SELECT * FROM "+PopularMoviesContract.VideosEntry.TABLE_NAME+"" +
+                        " WHERE "+ PopularMoviesContract.VideosEntry._ID +"=?"
+                , new String []{Long.toString(videoRowId)});
+
+
+        // Verify if the query got records
+        assertTrue( "Error: No Records returned from location query", cursor.moveToFirst() );
+
+
+        //Verfy each field
+
+        int indexId=cursor.getColumnIndex(PopularMoviesContract.VideosEntry._ID);
+        int indexMovieId=cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID);
+        int indexKey=cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_KEY);
+        int indexName=cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_NAME);
+        int indexSite=cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_SITE);
+        int indexType=cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_TYPE);
+
+
+        assertTrue("Error: Movie ID doesn´t Match", video.getMovieId()==cursor.getLong(indexMovieId));
+        assertEquals("Error: Key doesn´t Match", video.getKey(),cursor.getString(indexKey));
+        assertEquals("Error: Name doesn´t Match", video.getName(),cursor.getString(indexName));
+        assertEquals("Error: Site doesn´t Match", video.getSite(),cursor.getString(indexSite));
+        assertEquals("Error: Type doesn´t Match", video.getType(),cursor.getString(indexType));
+
+        // Move the cursor to demonstrate that there is only one record in the database
+        assertFalse( "Error: More than one record returned from location query",cursor.moveToNext() );
+
+
+
+        //Veriy that Key fields is unique
+        testValues=video2.getVideoValues();
+        video2RowId=db.insert(PopularMoviesContract.VideosEntry.TABLE_NAME,null,testValues);
+        assertEquals("Error: el registro fue inserado correctamente",video2RowId,-1L);
+
+
+
+
+        //Verify that the inserted record is deleted correctly
+        int qtyOfDeletedRecords=db.delete(PopularMoviesContract.VideosEntry.TABLE_NAME,PopularMoviesContract.VideosEntry._ID +"=?",new String []{Long.toString(videoRowId)});
+        assertEquals("Error: record was not deleted correctly",1,qtyOfDeletedRecords);
+
+        cursor=db.rawQuery("SELECT * FROM "+PopularMoviesContract.VideosEntry.TABLE_NAME+"" +
+                        " WHERE "+ PopularMoviesContract.VideosEntry._ID +"=?"
+                , new String []{Long.toString(videoRowId)});
+
+        // Verify if the query got records
+        assertFalse( "Error: The fake record was not deleted", cursor.moveToFirst() );
+
+
+        cursor.close();
+        db.close();
+
+
+    }
+
+
+
+
 
 
 

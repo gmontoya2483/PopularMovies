@@ -6,8 +6,13 @@ import android.test.AndroidTestCase;
 
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesProvider;
 
-import static com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract.MoviesEntry.*;
-import static com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract.FavoritesEntry.*;
+import static com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract.FavoritesEntry.buildAllFavoritesUri;
+import static com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract.FavoritesEntry.buildFavoriteByIdUri;
+import static com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract.MoviesEntry.buildAllMoviesUri;
+import static com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract.MoviesEntry.buildMoviebyIdUri;
+import static com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract.VideosEntry.buildAllVideosUri;
+import static com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract.VideosEntry.buildVideosByKeyUri;
+import static com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri;
 
 /**
  * Created by montoya on 24.08.2016.
@@ -16,13 +21,29 @@ public class TestUriMatcher extends AndroidTestCase {
 
     private static String EXPECTED_ALL_MOVIES_URI= "content://com.example.montoya.popularmovies/movies";
     private static String EXPECTED_MOVIE_BY_ID_URI="content://com.example.montoya.popularmovies/movies/123";
+
     private static String EXPECTED_ALL_FAVORITES_URI= "content://com.example.montoya.popularmovies/favorites";
     private static String EXPECTED_FAVORITE_BY_ID_URI="content://com.example.montoya.popularmovies/favorites/123";
+
+    private static String EXPECTED_ALL_VIDEO_URI="content://com.example.montoya.popularmovies/videos";
+    private static String EXPECTED_VIDEO_WITH_MOVIE_ID_URI="content://com.example.montoya.popularmovies/videos_movies/123";
+    private static String EXPECTED_VIDEO_WITH_KEY_URI="content://com.example.montoya.popularmovies/videos/123Key";
+
+
+
+
 
     private Uri CONSTRUCTED_ALL_MOVIES_URI;
     private Uri CONSTRUCTED_MOVIE_BY_ID_URI;
     private Uri CONSTRUCTED_ALL_FAVORITES_URI;
     private Uri CONSTRUCTED_FAVORITE_BY_ID_URI;
+    private Uri CONSTRUCTED_ALL_VIDEO_URI;
+    private Uri CONSTRUCTED_VIDEO_WITH_MOVIE_ID_URI;
+    private Uri CONSTRUCTED_VIDEO_WITH_KEY_URI;
+
+
+
+
 
 
 
@@ -32,8 +53,16 @@ public class TestUriMatcher extends AndroidTestCase {
         super.setUp();
         CONSTRUCTED_ALL_MOVIES_URI=buildAllMoviesUri();
         CONSTRUCTED_MOVIE_BY_ID_URI=buildMoviebyIdUri(123L);
+
         CONSTRUCTED_ALL_FAVORITES_URI=buildAllFavoritesUri();
         CONSTRUCTED_FAVORITE_BY_ID_URI=buildFavoriteByIdUri(123L);
+
+        CONSTRUCTED_ALL_VIDEO_URI=buildAllVideosUri();
+        CONSTRUCTED_VIDEO_WITH_KEY_URI=buildVideosByKeyUri("123Key");
+        CONSTRUCTED_VIDEO_WITH_MOVIE_ID_URI=buildVideosByMovieIdUri(123L);
+
+
+
 
 
 
@@ -103,6 +132,47 @@ public class TestUriMatcher extends AndroidTestCase {
 
 
     }
+
+
+
+    public void testVideoUris() throws Throwable{
+
+        //Verify the construction of the ALL Videos URI
+        assertEquals("Error: All Videos URI doesn't match",EXPECTED_ALL_VIDEO_URI,CONSTRUCTED_ALL_VIDEO_URI.toString());
+
+
+        //Verify the construction of the ALL Videos URI by Key
+        assertEquals("Error: Video by Key URI doesn't match",EXPECTED_VIDEO_WITH_KEY_URI,CONSTRUCTED_VIDEO_WITH_KEY_URI.toString());
+
+
+        ////Verify the construction of the ALL Videos URI by Movies
+        assertEquals("Error: Videos by movie URI doesn't match",EXPECTED_VIDEO_WITH_MOVIE_ID_URI,CONSTRUCTED_VIDEO_WITH_MOVIE_ID_URI.toString());
+
+
+    }
+
+
+
+
+    public void testVideoUriMatcher() throws Throwable{
+
+        UriMatcher testMatcher= PopularMoviesProvider.buildUriMatcher();
+
+        //Verify the VIDEO matcher
+        assertEquals("Error: VIDEO URI was matched incorrectly.",testMatcher.match(CONSTRUCTED_ALL_VIDEO_URI), PopularMoviesProvider.VIDEO);
+
+
+        //Verify the VIDEO_WITH_KEY matcher
+        assertEquals("Error: VIDEO by Key URI was matched incorrectly.",testMatcher.match(CONSTRUCTED_VIDEO_WITH_KEY_URI), PopularMoviesProvider.VIDEO_WITH_KEY);
+
+        //Verify the VIDEO_WITH MOVIE_ID matcher
+        assertEquals("Error: VIDEO by Movie URI was matched incorrectly.",testMatcher.match(CONSTRUCTED_VIDEO_WITH_MOVIE_ID_URI), PopularMoviesProvider.VIDEO_WITH_MOVIE_ID);
+
+
+
+    }
+
+
 
 
 

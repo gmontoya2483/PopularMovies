@@ -17,6 +17,7 @@ public class PopularMoviesContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_MOVIES = "movies";
     public static final String PATH_FAVORITES = "favorites";
+    public static final String PATH_VIDEOS = "videos";
 
 
 
@@ -78,6 +79,7 @@ public class PopularMoviesContract {
         // Table name
         public static final String TABLE_NAME = "favorites";
 
+
         // Columns
         public static final String COULUMN_MOVIE_TITLE = "mov_title";
         public static final String COULUMN_MOVIE_IMAGE_THUMBNAIL = "mov_imageThumbnail";
@@ -110,6 +112,81 @@ public class PopularMoviesContract {
         public static Uri buildAllFavoritesUri() {
             return CONTENT_URI;
         }
+
+
+
+
+    }
+
+
+
+
+    public static final class VideosEntry implements BaseColumns{
+
+
+        // Table name
+        public static final String TABLE_NAME = "videos";
+
+        //Columns
+        public static final String COLUMN_VIDEO_MOVIE_ID = "vid_mov_id"; //INTEGER NOT NULL
+        public static final String COLUMN_VIDEO_KEY = "vid_key"; //TEXT UNIQUE NOT NULL
+        public static final String COLUMN_VIDEO_NAME = "vid_name"; //TEXT NOT NULL
+        public static final String COLUMN_VIDEO_SITE="vid_site"; //TEXT NOT NULL
+        public static final String COLUMN_VIDEO_TYPE="vid_type"; //TEXT NOT NULL
+
+
+
+
+        // Create content uri
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_VIDEOS)
+                .build();
+
+        // create cursor of base type directory for multiples entries
+        public static final String CONTENT_DIR_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_VIDEOS;
+
+        // create cursor of base type item for single entry
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_VIDEOS;
+
+
+
+
+
+        public static Uri buildVideosByMovieIdUri(long movieId){
+
+            return BASE_CONTENT_URI.buildUpon()
+                    .appendPath(PATH_VIDEOS+"_"+PATH_MOVIES)
+                    .appendPath(Long.toString(movieId))
+                    .build();
+
+            /*
+            return CONTENT_URI.buildUpon()
+
+                    .appendPath(PATH_MOVIES)
+                    .appendPath(Long.toString(movieId))
+                    .build();
+
+
+                     */
+
+
+        }
+
+
+        public static Uri buildVideosByKeyUri(String key){
+            return CONTENT_URI.buildUpon().appendPath(key).build();
+
+
+        }
+
+
+        public static Uri buildAllVideosUri(){
+            return CONTENT_URI;
+
+
+        }
+
+
 
 
 

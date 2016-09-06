@@ -25,6 +25,10 @@ public class PopularMoviesProvider extends ContentProvider {
     public static final int MOVIE_WITH_ID=110;
     public static final int FAVORITE=200;
     public static final int FAVORITE_WITH_ID=210;
+    public static final int VIDEO=300;
+    public static final int VIDEO_WITH_MOVIE_ID=310;
+    public static final int VIDEO_WITH_KEY=320;
+
 
 
 
@@ -45,6 +49,12 @@ public class PopularMoviesProvider extends ContentProvider {
 
         matcher.addURI(authority, PopularMoviesContract.PATH_FAVORITES + "/#",FAVORITE_WITH_ID);
         matcher.addURI(authority, PopularMoviesContract.PATH_FAVORITES, FAVORITE);
+
+        matcher.addURI(authority, PopularMoviesContract.PATH_VIDEOS + "/*",VIDEO_WITH_KEY);
+        matcher.addURI(authority, PopularMoviesContract.PATH_VIDEOS, VIDEO);
+        matcher.addURI(authority, PopularMoviesContract.PATH_VIDEOS +"_"+PopularMoviesContract.PATH_MOVIES+"/#",VIDEO_WITH_MOVIE_ID);
+
+
 
         return matcher;
 
@@ -79,6 +89,12 @@ public class PopularMoviesProvider extends ContentProvider {
                 return PopularMoviesContract.FavoritesEntry.CONTENT_ITEM_TYPE;
             case FAVORITE:
                 return PopularMoviesContract.FavoritesEntry.CONTENT_DIR_TYPE;
+            case VIDEO:
+                return PopularMoviesContract.VideosEntry.CONTENT_DIR_TYPE;
+            case VIDEO_WITH_KEY:
+                return PopularMoviesContract.VideosEntry.CONTENT_ITEM_TYPE;
+            case VIDEO_WITH_MOVIE_ID:
+                return PopularMoviesContract.VideosEntry.CONTENT_DIR_TYPE;
 
 
             default:
