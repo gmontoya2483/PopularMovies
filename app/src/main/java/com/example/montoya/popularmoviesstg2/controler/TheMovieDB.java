@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.Video;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,35 +56,12 @@ public class TheMovieDB {
 
 
 
-    public URL BuildUriTrailers(Long id){
-
-
-        Uri buildUri= Uri.parse(BASE_URL).buildUpon()
-                .appendPath(MOVIE_PATH)
-                .appendPath(String.valueOf(id))
-                .appendPath(VIDEOS_PATH)
-                .appendQueryParameter(APPID_PARAM,API_KEY)
-                .build();
-
-
-        try {
-
-            URL url=new URL(buildUri.toString());
-            return url;
-        } catch (MalformedURLException e) {
-
-            Log.e(LOG_TAG,"Error:"+e.getStackTrace());
-            return null;
-        }
-
-
-    }
 
 
 
 
 
-
+    // Method to build the URI for getting the  Movie of a particular enPpointer popular or top_rated oder
     public URL BuildUri(String endPointFilter){
 
 
@@ -115,7 +93,7 @@ public class TheMovieDB {
 
 
 
-
+    // Method to build the URI for getting the  Images
     public static String BuildImageUrl (String size, String file_path){
         Uri buildUri= Uri.parse(IMAGE_BASE_URL).buildUpon()
                 .appendPath(size)
@@ -129,7 +107,7 @@ public class TheMovieDB {
     }
 
 
-
+    //Method to get the Json Strring for the movies
     public String getDataFromInternet(String endPointFilter){
         HttpURLConnection urlConnection=null;
         BufferedReader reader=null;
@@ -183,6 +161,9 @@ public class TheMovieDB {
 
     }
 
+
+
+    //Parser mothod which gets a JSon String and return an ArrayList of Movies
     public ArrayList<Movie> JSonParser (String JsonMessage)  {
 
 
@@ -243,7 +224,7 @@ public class TheMovieDB {
 
 
 
-
+    //Method which trigger the Asynctask for getting the Movies from Internet
     public static void updateMovies(Context context){
         //Check if there is internet connection
         ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -263,6 +244,165 @@ public class TheMovieDB {
 
 
     }
+
+
+
+
+    /*
+    * This section applies to the method to manage the Videos.
+    * http://api.themoviedb.org/3/movie/{id}/videos?api_key=?
+    *
+    */
+
+
+    // Method to build the URI for getting the Videos of a particular Movie
+    public URL BuildVideosUri(Long id){
+
+
+        Uri buildUri= Uri.parse(BASE_URL).buildUpon()
+                .appendPath(MOVIE_PATH)
+                .appendPath(String.valueOf(id))
+                .appendPath(VIDEOS_PATH)
+                .appendQueryParameter(APPID_PARAM,API_KEY)
+                .build();
+
+
+        try {
+
+            URL url=new URL(buildUri.toString());
+            return url;
+        } catch (MalformedURLException e) {
+
+            Log.e(LOG_TAG,"Error:"+e.getStackTrace());
+            return null;
+        }
+
+
+    }
+
+
+    //Method to get the Json Strring for the movies
+    public String getVideosFromInternet(Long movieId){
+        HttpURLConnection urlConnection=null;
+        BufferedReader reader=null;
+        String videosJsonStr=null;
+        URL url=this.BuildVideosUri(movieId);
+
+
+        //Create the request to the MovieDB and Open the connection
+        try {
+            urlConnection=(HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+
+            //Read the input stream into a String
+            InputStream inputStream=urlConnection.getInputStream();
+            StringBuffer buffer=new StringBuffer();
+            if(inputStream!=null){
+                reader=new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line=reader.readLine())!=null){
+                    buffer.append (line+"\n");
+                }
+
+                if (buffer.length()!=0){
+                    videosJsonStr=buffer.toString();
+                }
+
+
+            }
+        } catch (IOException e) {
+            Log.e(LOG_TAG,"Error: "+e.getStackTrace(),e);
+            return null;
+
+        }finally {
+            if(urlConnection !=null){
+                urlConnection.disconnect();
+            }
+            if (reader !=null){
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e(LOG_TAG,"Error Closing: "+e.getStackTrace(),e);
+                }
+            }
+        }
+
+
+        return videosJsonStr;
+
+
+    }
+
+
+    //Parser method which gets a JSon String and return an ArrayList of Movies
+    public ArrayList<Video> JSonVideoParser (String JsonMessage)  {
+
+
+
+        ArrayList<Video> myVideoList = new ArrayList<Video>();
+
+
+        final String OWM_RESULTS="results";
+        final String KEY="key";
+        final String NAME="name";
+        final String SITE="site";
+        final String TYPE="type";
+        final String MOVIE_ID="id";
+
+
+        String movieID;
+
+
+
+
+        JSONObject videoJsonList= null;
+        JSONObject videoJson=null;
+        try {
+            videoJsonList = new JSONObject(JsonMessage);
+            movieID=videoJsonList.getString(MOVIE_ID);
+            JSONArray videoJsonArray=videoJsonList.getJSONArray(OWM_RESULTS);
+
+
+            for (int i=0;i <videoJsonArray.length();i++){
+
+
+                String key="";
+                String name="";
+                String site="";
+                String type="";
+
+
+
+
+                videoJson=videoJsonArray.getJSONObject(i);
+                key=videoJson.getString(KEY);
+                name=videoJson.getString(NAME);
+                site=videoJson.getString(SITE);
+                type=videoJson.getString(TYPE);
+
+
+                myVideoList.add(new Video(Long.parseLong(movieID),key,name,site,type));
+
+
+            }
+
+            return myVideoList;
+
+
+
+        } catch (JSONException e) {
+            Log.e (LOG_TAG,"Error: "+ e.getStackTrace(),e);
+            return null;
+        }
+
+
+    }
+
+
+
+
 
 
 
