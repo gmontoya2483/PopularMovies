@@ -168,6 +168,26 @@ public class TestUtilities extends AndroidTestCase{
 
 
 
+    static int deleteAllVideos(Context context){
+
+        Cursor cursor;
+        SQLiteDatabase db=new PopularMoviesDbHelper(context).getWritableDatabase();
+        int qtyOfDeletedRecords=db.delete(PopularMoviesContract.VideosEntry.TABLE_NAME,null,null);
+
+        cursor=db.rawQuery("SELECT "+PopularMoviesContract.VideosEntry._ID+" FROM "+PopularMoviesContract.VideosEntry.TABLE_NAME,null);
+        assertFalse("Error: DeleteAllVideos - Not all videos records were deleted",cursor.moveToFirst());
+
+        db.close();
+
+        return qtyOfDeletedRecords;
+
+
+
+
+    }
+
+
+
 
 
 }

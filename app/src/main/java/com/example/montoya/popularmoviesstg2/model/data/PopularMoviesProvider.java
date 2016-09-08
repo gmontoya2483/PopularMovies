@@ -170,14 +170,34 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
             case VIDEO_WITH_KEY:
-                String key=String.valueOf(ContentUris.parseId(uri));
-                retCursor=null;
+                selectionArgs= new String[] {uri.getLastPathSegment().toString()};
+                selection=PopularMoviesContract.VideosEntry.COLUMN_VIDEO_KEY+"=?";
+
+                retCursor=mPopularMoviesDbHelper.getReadableDatabase().query(
+                        PopularMoviesContract.VideosEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
 
 
             case VIDEO_WITH_MOVIE_ID:
                 String movie_id=String.valueOf(ContentUris.parseId(uri));
-                retCursor=null;
+                selection=PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID+"=?";
+                selectionArgs= new String[] {String.valueOf(ContentUris.parseId(uri))};
+                retCursor=mPopularMoviesDbHelper.getReadableDatabase().query(
+                        PopularMoviesContract.VideosEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
 
 
@@ -212,6 +232,11 @@ public class PopularMoviesProvider extends ContentProvider {
             case FAVORITE:
                 insertedUri=insertFavorite(values);
                 break;
+
+            case VIDEO:
+                insertedUri=insertVideo(values);
+                break;
+
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: "+uri);
@@ -381,6 +406,12 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
 
+    /**
+     * Helper Method for Managen the FAVORITES TABLE
+     *
+    * */
+
+
     private Cursor queryFavoriteById (String id){
 
         Cursor cursor;
@@ -459,6 +490,45 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
         return  deletedRecords;
+
+    }
+
+
+/**
+ * Helper Method for Managen the VIDEO TABLE
+ *
+ * */
+
+
+    private Uri insertVideo(ContentValues values){
+
+        Uri insertedVideoUri=null;
+        Long insertedVideoId;
+
+
+        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+        if (db.isOpen()){
+            insertedVideoId=db.insert(PopularMoviesContract.VideosEntry.TABLE_NAME,null,values);
+            if(insertedVideoId!=-1){
+
+                String key=values.getAsString(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_KEY);
+                insertedVideoUri=PopularMoviesContract.VideosEntry.buildVideosByKeyUri(key);
+
+
+            }else{
+                insertedVideoUri=null;
+                Log.e(LOG_TAG,"Movie could not be inserted");
+            }
+
+
+        }else{
+            insertedVideoUri=null;
+            Log.e(LOG_TAG,"database could not be opened");
+        }
+
+
+        return insertedVideoUri;
+
 
     }
 

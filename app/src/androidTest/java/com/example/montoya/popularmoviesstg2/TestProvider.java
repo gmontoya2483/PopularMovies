@@ -6,13 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.test.AndroidTestCase;
-import android.util.Log;
 
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.Video;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesDbHelper;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesProvider;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -615,6 +616,215 @@ public class TestProvider extends AndroidTestCase {
 
 
     }
+
+
+
+
+
+    /*
+    *
+    * Videos section
+    *
+    */
+
+
+    public void testInsertVideoFromProvider(){
+
+        final String TESTCASE_NAME="testInsertVideosFromProvider()";
+
+        ContentValues videoValues;
+        Uri allVideosUri=PopularMoviesContract.VideosEntry.buildAllVideosUri();
+        Uri insertedVideoUri;
+
+        //Delete all movies records to get an empty Movie table
+        TestUtilities.deleteAllVideos(mContext);
+
+
+        Video video=new Video(1L,"FakeKey","FakeName","FakeSite","FakeType");
+        videoValues=video.getVideoValues();
+
+
+        insertedVideoUri=mContext.getContentResolver().insert(allVideosUri,videoValues);
+
+        //Verify theinsertedVideoUri is not null
+        assertTrue(TESTCASE_NAME+" - InsertedVideoUri is NULL", insertedVideoUri!=null);
+
+
+        //Get the Record which was just created
+        Cursor cursor;
+        cursor=mContext.getContentResolver().query(insertedVideoUri,null,null,null,null);
+
+        //Verify that only 1 record was taken
+        assertTrue(TESTCASE_NAME+" - More than 1 record was taken", cursor.getCount()==1);
+
+        //Verify that the cursor is not empty and Move it to the first record
+        assertTrue(TESTCASE_NAME+" - Not possible to move the cursor to the first record",cursor.moveToFirst());
+
+        //get the values from the cursor
+        Long _id=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.VideosEntry._ID));
+        Long movieId=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID));
+        String key=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_KEY));
+        String name=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_NAME));
+        String type=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_TYPE));
+        String site=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_SITE));
+
+        //Compare the values
+        assertEquals(TESTCASE_NAME+" - Movie ID doesn´t match",movieId,video.getMovieId());
+        assertEquals(TESTCASE_NAME+" - Key doesn´t match",key,video.getKey());
+        assertEquals(TESTCASE_NAME+" - Name doesn´t match",name,video.getName());
+        assertEquals(TESTCASE_NAME+" - Site doesn´t match",site, video.getSite());
+        assertEquals(TESTCASE_NAME+" - Type doesn´t match",type,video.getType());
+
+
+        //Delete all movies records to leave an Empty Movie table for further Test cases
+        TestUtilities.deleteAllVideos(mContext);
+
+
+        cursor.close();
+    }
+
+
+
+
+
+    public void testQueryAllVideosFromProvider(){
+
+        final String TESTCASE_NAME="testQueryAllVideosFromProvider()";
+
+
+        ContentValues videoContentValues;
+        HashMap<Long,Uri> QueryUris=new HashMap<Long,Uri>();
+        Uri allVideosUri;
+        UriMatcher testMatcher= PopularMoviesProvider.buildUriMatcher();
+        Video video;
+
+
+        //Create an ArrayList with several Movies
+        HashMap<Long,Video> mVideos=new HashMap<Long,Video>();
+        mVideos.put(1L,new Video(1L,"Key1","FakeName1", "FakeSite1","FakeType1"));
+        mVideos.put(2L,new Video(1L,"Key2","FakeName2", "FakeSite2","FakeType2"));
+        mVideos.put(3L,new Video(2L,"Key3","FakeName3", "FakeSite3","FakeType3"));
+        mVideos.put(4L,new Video(3L,"Key4","FakeName4", "FakeSite4","FakeType4"));
+        mVideos.put(5L,new Video(3L,"Key5","FakeName5", "FakeSite5","FakeType5"));
+        mVideos.put(6L,new Video(3L,"Key6","FakeName6", "FakeSite6","FakeType6"));
+        mVideos.put(7L,new Video(4L,"Key7","FakeName7", "FakeSite7","FakeType7"));
+        mVideos.put(8L,new Video(5L,"Key8","FakeName8", "FakeSite8","FakeType8"));
+        mVideos.put(9L,new Video(6L,"Key9","FakeName9", "FakeSite9","FakeType9"));
+        mVideos.put(10L,new Video(7L,"Key10","FakeName10", "FakeSite10","FakeType10"));
+        mVideos.put(11L,new Video(7L,"Key11","FakeName11", "FakeSite11","FakeType11"));
+        mVideos.put(12L,new Video(8L,"Key12","FakeName12", "FakeSite12","FakeType12"));
+
+
+
+        //Delete all movies records to get an empty Movie table
+        TestUtilities.deleteAllVideos(mContext);
+
+
+        //Insert all the Movies and get a reference to its query string
+
+        for (long i=1;i<=mVideos.size();i++)
+        {
+            video=mVideos.get(i);
+            videoContentValues = video.getVideoValues();
+            QueryUris.put(i,mContext.getContentResolver().insert (PopularMoviesContract.VideosEntry.buildAllVideosUri(), videoContentValues));
+        }
+
+
+
+
+        //Verify that all movies where inseted into the dataBase
+        assertEquals("Error: Size of the Hashtable and the Arraylist of Videos is not the same",mVideos.size(),QueryUris.size());
+
+
+        //Verify the Video matcher
+        allVideosUri=PopularMoviesContract.VideosEntry.buildAllVideosUri();
+        assertEquals("Error: VIDEO was matched incorrectly.",testMatcher.match(allVideosUri), PopularMoviesProvider.VIDEO);
+
+        //Execute the query
+        Cursor cursor=mContext.getContentResolver().query(allVideosUri,null,null,null,null);
+
+        //verify that the cursor is not empty
+        assertTrue("Error: Cursor is empty",cursor.moveToFirst());
+
+        //verify that the query got all records
+        assertEquals("Error: Size of the Hashtable and the Arraylist of of movies is not the same",mVideos.size(),cursor.getCount());
+
+
+
+
+        //Delete all movies records to leave an Empty Movie table for further Test cases
+        TestUtilities.deleteAllVideos(mContext);
+
+
+        cursor.close();
+
+    }
+
+
+
+    public void testQueryVideosByMovieID(){
+
+        final String TESTCASE_NAME="testQueryVideosByMovieID()";
+
+        Cursor cursor;
+        ArrayList<Video> VideoList =new ArrayList<Video>();
+        ContentValues videoValues;
+        Uri allVideosUri=PopularMoviesContract.VideosEntry.buildAllVideosUri();
+
+
+
+        VideoList.add(new Video(1L,"Key1","FakeName1", "FakeSite1","FakeType1"));
+        VideoList.add(new Video(1L,"Key2","FakeName2", "FakeSite2","FakeType2"));
+        VideoList.add(new Video(2L,"Key3","FakeName3", "FakeSite3","FakeType3"));
+        VideoList.add(new Video(3L,"Key4","FakeName4", "FakeSite4","FakeType4"));
+        VideoList.add(new Video(3L,"Key5","FakeName5", "FakeSite5","FakeType5"));
+        VideoList.add(new Video(3L,"Key6","FakeName6", "FakeSite6","FakeType6"));
+        VideoList.add(new Video(4L,"Key7","FakeName7", "FakeSite7","FakeType7"));
+        VideoList.add(new Video(5L,"Key8","FakeName8", "FakeSite8","FakeType8"));
+        VideoList.add(new Video(6L,"Key9","FakeName9", "FakeSite9","FakeType9"));
+        VideoList.add(new Video(7L,"Key10","FakeName10", "FakeSite10","FakeType10"));
+        VideoList.add(new Video(7L,"Key11","FakeName11", "FakeSite11","FakeType11"));
+        VideoList.add(new Video(8L,"Key12","FakeName12", "FakeSite12","FakeType12"));
+
+
+
+        //Delete all Videos records to ensure that we have an Empty Video table
+        TestUtilities.deleteAllVideos(mContext);
+
+
+        //Instert the test data
+        for (Video video:VideoList){
+
+            videoValues=video.getVideoValues();
+            mContext.getContentResolver().insert(allVideosUri,videoValues);
+
+
+        }
+
+
+
+        Uri videosByMovieUri=PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri(3L);
+        cursor=mContext.getContentResolver().query(videosByMovieUri,null,null,null,null);
+
+
+        //Verify that the query got only 3 records
+        assertEquals(TESTCASE_NAME+" - Quantity of Records doesn´t match",cursor.getCount(),3);
+
+
+
+        //Delete all movies records to leave an Empty Video table for further Test cases
+        TestUtilities.deleteAllVideos(mContext);
+
+
+    }
+
+
+
+
+
+
+
+
 
 
 }
