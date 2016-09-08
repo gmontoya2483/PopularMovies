@@ -156,6 +156,32 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
 
+            case VIDEO:
+                retCursor=mPopularMoviesDbHelper.getReadableDatabase().query(
+                        PopularMoviesContract.VideosEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+
+
+            case VIDEO_WITH_KEY:
+                String key=String.valueOf(ContentUris.parseId(uri));
+                retCursor=null;
+                break;
+
+
+            case VIDEO_WITH_MOVIE_ID:
+                String movie_id=String.valueOf(ContentUris.parseId(uri));
+                retCursor=null;
+                break;
+
+
+
             default:
 
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
