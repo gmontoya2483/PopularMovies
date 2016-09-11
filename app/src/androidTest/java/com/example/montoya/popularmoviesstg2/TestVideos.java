@@ -1,10 +1,13 @@
 package com.example.montoya.popularmoviesstg2;
 
+import android.database.Cursor;
+import android.net.Uri;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
 import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
 import com.example.montoya.popularmoviesstg2.model.Video;
+import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 
 import java.util.ArrayList;
 
@@ -56,6 +59,47 @@ public class TestVideos extends AndroidTestCase{
         }
 
 
+    }
+
+
+    public void testBulkInsert(){
+        int insertedRecords;
+        Uri allVideosUri= PopularMoviesContract.VideosEntry.buildAllVideosUri();
+        ArrayList<Video> VideoList=new ArrayList<Video>();
+        VideoList.add(new Video(1L,"Key1","FakeName1", "FakeSite1","FakeType1"));
+        VideoList.add(new Video(2L,"Key2","FakeName2", "FakeSite2","FakeType2"));
+        VideoList.add(new Video(1L,"Key3","FakeName3", "FakeSite3","FakeType3"));
+        VideoList.add(new Video(3L,"Key4","FakeName4", "FakeSite4","FakeType4"));
+        VideoList.add(new Video(1L,"Key5","FakeName2", "FakeSite2","FakeType2"));
+        VideoList.add(new Video(5L,"Key6","FakeName3", "FakeSite3","FakeType3"));
+        VideoList.add(new Video(7L,"Key7","FakeName4", "FakeSite4","FakeType4"));
+
+        //Delete all Videos in order to get an empty table
+        TestUtilities.deleteAllVideos(mContext);
+
+        insertedRecords=Video.bulkInsertVideos(mContext,VideoList);
+
+        //verificar la cantidad de registros insertados
+        assertEquals("ERROR: La cantidad de registros insertados diefiero con la cantidad insertada",7,insertedRecords);
+
+
+        Cursor cursor=mContext.getContentResolver().query(allVideosUri,null,null,null,null);
+        //verificar la cantidad de registros insertados
+        assertEquals("ERROR: La cantidad de registros insertados diefiero con la cantidad insertada",cursor.getCount(),insertedRecords);
+
+
+
+        //Delete all Videos in order to get an empty table
+        TestUtilities.deleteAllVideos(mContext);
+
+        cursor.close();
+
+
+
+
+
+
+
 
 
 
@@ -64,6 +108,10 @@ public class TestVideos extends AndroidTestCase{
 
 
     }
+
+
+
+
 
 
 

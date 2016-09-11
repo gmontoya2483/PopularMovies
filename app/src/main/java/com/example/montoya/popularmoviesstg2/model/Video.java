@@ -1,8 +1,12 @@
 package com.example.montoya.popularmoviesstg2.model;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.net.Uri;
 
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
+
+import java.util.ArrayList;
 
 /**
  * Created by montoya on 06.09.2016.
@@ -82,6 +86,29 @@ public class Video {
 
 
         return videoValues;
+
+    }
+
+
+
+
+    public static int bulkInsertVideos (Context context, ArrayList<Video> videos){
+        int quantityOfInsertedMovies=0;
+        int quantityOfVideos=videos.size();
+        Uri allVideosUri=PopularMoviesContract.VideosEntry.buildAllVideosUri();
+
+        ContentValues values[]=new ContentValues[quantityOfVideos];
+
+        //generate the Content values Array
+        int i=0;
+        for (Video video: videos) {
+            values[i]=video.getVideoValues();
+            i++;
+        }
+
+        quantityOfInsertedMovies=context.getContentResolver().bulkInsert(allVideosUri,values);
+
+        return quantityOfInsertedMovies;
 
     }
 
