@@ -8,6 +8,7 @@ import android.test.AndroidTestCase;
 
 import com.example.montoya.popularmoviesstg2.controler.Utils;
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.Video;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesDbHelper;
 
@@ -182,6 +183,22 @@ public class TestUtilities extends AndroidTestCase{
         return qtyOfDeletedRecords;
 
 
+
+
+    }
+
+
+
+    static ContentValues[] generateFakeVideoContentValueArray (ArrayList<Video> videos){
+        ContentValues values []=new ContentValues[videos.size()];
+        int i=0;
+        for(Video video:videos){
+            values[i]=video.getVideoValues();
+            i++;
+
+        }
+
+     return values;
 
 
     }

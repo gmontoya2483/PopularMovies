@@ -820,6 +820,141 @@ public class TestProvider extends AndroidTestCase {
 
 
 
+    public void testBulkInsertVideosFromTheProvider(){
+
+
+        int insertedRecords;
+        ContentValues values[];
+        Uri allVideosUri=PopularMoviesContract.VideosEntry.buildAllVideosUri();
+        Cursor cursor;
+
+
+        ArrayList<Video> VideoList=new ArrayList<Video>();
+        VideoList.add(new Video(1L,"Key1","FakeName1", "FakeSite1","FakeType1"));
+        VideoList.add(new Video(1L,"Key2","FakeName2", "FakeSite2","FakeType2"));
+        VideoList.add(new Video(1L,"Key3","FakeName3", "FakeSite3","FakeType3"));
+        VideoList.add(new Video(1L,"Key4","FakeName4", "FakeSite4","FakeType4"));
+
+
+
+
+
+        //Delete all Videos in order to get an empty table
+        TestUtilities.deleteAllVideos(mContext);
+
+
+        //Bulk Insert all the records
+        values=TestUtilities.generateFakeVideoContentValueArray(VideoList);
+        insertedRecords=mContext.getContentResolver().bulkInsert(allVideosUri,values);
+
+        //Verify the quantity of inserted records
+        assertEquals("Error: the quantity of inserted records doesn´t match with the expected",insertedRecords,VideoList.size());
+
+
+
+        //Query all records to check how many entries has the movie table
+        cursor=mContext.getContentResolver().query(allVideosUri,null,null,null,null);
+
+        //Verify that the cursor is not empty
+        assertTrue("Error: the cursor is empty",cursor.moveToFirst());
+
+        //Verify the quantity of records
+        assertTrue("Error: the quantity of inserted records doesnt´match with the expected",cursor.getCount()==VideoList.size());
+
+
+        //Delete all Videos in order to leave an empty empty table for further tests
+        TestUtilities.deleteAllVideos(mContext);
+
+        //Query all records to check how many entries has the Videos table
+        cursor=mContext.getContentResolver().query(allVideosUri,null,null,null,null);
+
+
+        //Verify the quantity of records
+        assertTrue("Error: the Movies table still have records",cursor.getCount()==0);
+
+
+        cursor.close();
+
+
+    }
+
+
+
+    public void testDeleteVideosFromTheProvider(){
+
+        Movie movie=new Movie(1L,"FakeTitle","FakeImage","FakeSyznopsis","FakeUserRating","FakeReleaseDate");
+        int deletedRecords;
+        Cursor cursor;
+
+
+        //Delete all Videos in order to leave an empty empty table for further tests
+        TestUtilities.deleteAllVideos(mContext);
+
+        //Delete all favorites entries
+        TestUtilities.deleteAllFavoritesRecords(mContext);
+
+        //add the movie into favorite
+        movie.setToFavorite(mContext);
+
+
+
+        //Insert several videos
+        int insertedRecords;
+        ContentValues values[];
+        Uri allVideosUri=PopularMoviesContract.VideosEntry.buildAllVideosUri();
+
+
+        ArrayList<Video> VideoList=new ArrayList<Video>();
+        VideoList.add(new Video(1L,"Key1","FakeName1", "FakeSite1","FakeType1"));
+        VideoList.add(new Video(2L,"Key2","FakeName2", "FakeSite2","FakeType2"));
+        VideoList.add(new Video(1L,"Key3","FakeName3", "FakeSite3","FakeType3"));
+        VideoList.add(new Video(3L,"Key4","FakeName4", "FakeSite4","FakeType4"));
+        VideoList.add(new Video(2L,"Key5","FakeName4", "FakeSite4","FakeType4"));
+        VideoList.add(new Video(4L,"Key6","FakeName4", "FakeSite4","FakeType4"));
+
+        values=TestUtilities.generateFakeVideoContentValueArray(VideoList);
+        insertedRecords=mContext.getContentResolver().bulkInsert(allVideosUri,values);
+
+
+        //Verify the delete function
+        deletedRecords=mContext.getContentResolver().delete(allVideosUri,null,null);
+
+        //Verify the quantity of deleted records
+        assertEquals("The quantity of deleted records doesn't match",deletedRecords,4);
+
+
+        cursor=mContext.getContentResolver().query(allVideosUri,null,null,null,null);
+        assertEquals("The quantity of not deleted records doesn't match",cursor.getCount(),2);
+
+
+
+
+
+        //Delete all Videos in order to leave an empty empty table for further tests
+        TestUtilities.deleteAllVideos(mContext);
+
+        //Delete all favorites entries
+        TestUtilities.deleteAllFavoritesRecords(mContext);
+
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -47,6 +47,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
     private static final int MOVIE_DETAILS_LOADER = 1;
+    private static final int MOVIE_VIDEOS=2;
 
 
     View mRootView;

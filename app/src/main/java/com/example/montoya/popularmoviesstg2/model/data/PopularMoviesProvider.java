@@ -268,6 +268,10 @@ public class PopularMoviesProvider extends ContentProvider {
                 rowsDeleted=deleteFavorite(movie_id);
                 break;
 
+            case VIDEO:
+                rowsDeleted=deleteVideos();
+                break;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -298,6 +302,9 @@ public class PopularMoviesProvider extends ContentProvider {
             case MOVIE:
                 rowsInserted=bulkInsertMovies(values);
 
+                break;
+            case VIDEO:
+                rowsInserted=bulkInsertVideos(values);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -495,7 +502,7 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
 /**
- * Helper Method for Managen the VIDEO TABLE
+ * Helper Method for Manage the VIDEO TABLE
  *
  * */
 
@@ -531,6 +538,60 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
     }
+
+
+
+
+
+    private int bulkInsertVideos(ContentValues[] values){
+
+        int rowsInserted = 0;
+        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (ContentValues value : values) {
+
+                long _id=db.insert(PopularMoviesContract.VideosEntry.TABLE_NAME,null,value);
+                if (_id!=-1){
+                    rowsInserted++;
+                }
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+        return rowsInserted;
+
+
+    }
+
+
+
+    private int deleteVideos(){
+        int deletedVideos;
+
+        //We ensure that movie is not part of the favorite List
+        String sqlWhere= PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID
+                + " NOT IN (SELECT "+PopularMoviesContract.FavoritesEntry._ID
+                                +" FROM "+PopularMoviesContract.FavoritesEntry.TABLE_NAME+")";
+
+        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+        if (db.isOpen()){
+            deletedVideos=db.delete(PopularMoviesContract.VideosEntry.TABLE_NAME,sqlWhere,null);
+
+
+        }else{
+            deletedVideos=-1;
+            Log.e(LOG_TAG,"database could not be opened");
+        }
+
+
+        return deletedVideos;
+
+
+    }
+
 
 
 
