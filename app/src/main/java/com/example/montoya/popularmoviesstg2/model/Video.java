@@ -2,6 +2,7 @@ package com.example.montoya.popularmoviesstg2.model;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
@@ -109,6 +110,43 @@ public class Video {
         quantityOfInsertedMovies=context.getContentResolver().bulkInsert(allVideosUri,values);
 
         return quantityOfInsertedMovies;
+
+    }
+
+
+
+
+    public static ArrayList<Video> getMovieVideosArrayList(Context context,Long movieId){
+        ArrayList<Video> videos=new ArrayList<Video>();
+        Cursor cursor;
+        Uri allVideosByMovie=PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri(movieId);
+        cursor=context.getContentResolver().query(allVideosByMovie,null,null,null,null);
+
+        Long id, movie_id;
+        String key, name,site,type;
+
+
+
+        if (cursor.moveToFirst()){
+            do{
+                id=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.VideosEntry._ID));
+                movie_id=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID));
+                key=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_KEY));
+                name=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_NAME));
+                site=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_SITE));
+                type=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_TYPE));
+
+                videos.add(new Video(id,movie_id,key,name,site,type));
+
+            }while(cursor.moveToNext());
+
+        }else{
+            videos=null;
+        }
+        return videos;
+
+
+
 
     }
 
