@@ -4,9 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
-import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 
 import java.util.ArrayList;
@@ -159,17 +157,8 @@ public class Movie {
         return isFavorite;
     }
 
-    public ArrayList<Video> getVideos(Context context) {
-        if (videos==null){
-            videos=Video.getMovieVideosArrayList(context,this.id);
-            if (videos==null){
-                FetchVideosTask fetchVideosTask=new FetchVideosTask(context);
-                fetchVideosTask.execute();
-            }
-        }
-
-
-        return videos;
+    public ArrayList<Video> getVideos() {
+            return videos;
     }
 
 
@@ -398,44 +387,7 @@ public class Movie {
 
 
 
-    public class FetchVideosTask extends AsyncTask<Void,Void,ArrayList<Video>> {
 
-        private final String LOG_TAG=FetchVideosTask.class.getSimpleName();
-        private TheMovieDB mTheMovieDB = new TheMovieDB();
-        private final Context mContext;
-
-
-        public FetchVideosTask(Context context){
-
-            this.mContext=context;
-
-
-
-        }
-
-
-        @Override
-        protected ArrayList<Video> doInBackground(Void... voids) {
-
-            String JsonString=mTheMovieDB.getVideosFromInternet(id);
-            ArrayList<Video> mVideosList=new ArrayList<Video>();
-            mVideosList=mTheMovieDB.JSonVideoParser(JsonString);
-            Video.bulkInsertVideos(mContext,videos);
-
-
-
-            return mVideosList;
-        }
-
-
-
-
-        @Override
-        protected void onPostExecute(ArrayList<Video> movieVideos) {
-            videos=movieVideos;
-
-        }
-    }
 
 
 

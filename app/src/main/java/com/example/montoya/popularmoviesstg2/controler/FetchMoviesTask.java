@@ -1,13 +1,10 @@
 package com.example.montoya.popularmoviesstg2.controler;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
-import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.Video;
 
 import java.util.ArrayList;
 
@@ -81,6 +78,15 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,Void> {
 
 
     }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        super.onPostExecute(aVoid);
+
+        //delete all Videos which are not associated to any Movie or eny Favorite
+        Video.deleteAllVides(mContext);
+    }
+
 
     /*
     @Override

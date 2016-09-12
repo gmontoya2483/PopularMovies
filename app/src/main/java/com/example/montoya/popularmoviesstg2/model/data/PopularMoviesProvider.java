@@ -574,7 +574,10 @@ public class PopularMoviesProvider extends ContentProvider {
         //We ensure that movie is not part of the favorite List
         String sqlWhere= PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID
                 + " NOT IN (SELECT "+PopularMoviesContract.FavoritesEntry._ID
-                                +" FROM "+PopularMoviesContract.FavoritesEntry.TABLE_NAME+")";
+                                +" FROM "+PopularMoviesContract.FavoritesEntry.TABLE_NAME+")" +
+                " AND "+PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID
+                + " NOT IN (SELECT "+PopularMoviesContract.MoviesEntry._ID
+                +" FROM "+PopularMoviesContract.MoviesEntry.TABLE_NAME+")";
 
         final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
         if (db.isOpen()){

@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.test.AndroidTestCase;
 
 import com.example.montoya.popularmoviesstg2.model.Movie;
-import com.example.montoya.popularmoviesstg2.model.Video;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesProvider;
 
@@ -356,16 +355,7 @@ public class TestMovieClass extends AndroidTestCase{
     }
 
 
-/*
-    public void testFetchMovieVideos(){
-        ArrayList<Video> videos;
-        Movie movie=new Movie(158852,"Tomorrowland","image","syznopsis","Rating","2015");
-        videos=movie.getVideos(mContext);
 
-        assertTrue("Error: Video List is null",videos!=null);
-
-    }
-   */
 
 
 

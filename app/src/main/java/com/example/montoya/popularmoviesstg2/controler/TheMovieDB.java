@@ -247,6 +247,28 @@ public class TheMovieDB {
 
 
 
+    public static void updateVideos(Context context, Long movieID){
+        //Check if there is internet connection
+        ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            //Execute the Async task
+            //FetchMoviesTask moviesTask=new FetchMoviesTask(getActivity(),myMovieAdapter);
+            FetchVideosTask videosTask=new FetchVideosTask(context, movieID);
+            videosTask.execute();
+
+
+        } else {
+
+            Toast.makeText(context, R.string.err_no_netwaork_connection, Toast.LENGTH_LONG).show();
+        }
+
+
+
+    }
+
+
+
 
     /*
     * This section applies to the method to manage the Videos.

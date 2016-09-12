@@ -883,6 +883,8 @@ public class TestProvider extends AndroidTestCase {
     public void testDeleteVideosFromTheProvider(){
 
         Movie movie=new Movie(1L,"FakeTitle","FakeImage","FakeSyznopsis","FakeUserRating","FakeReleaseDate");
+        Movie movie2=new Movie (2L,"FakeTitle","FakeImage","FakeSyznopsis","FakeUserRating","FakeReleaseDate");
+
         int deletedRecords;
         Cursor cursor;
 
@@ -893,8 +895,14 @@ public class TestProvider extends AndroidTestCase {
         //Delete all favorites entries
         TestUtilities.deleteAllFavoritesRecords(mContext);
 
+        //Delete all movie entries
+        TestUtilities.deleteAllMoviesRecords(mContext);
+
         //add the movie into favorite
         movie.setToFavorite(mContext);
+
+        //Insert Movie2
+        movie2.insertMovie(mContext);
 
 
 
@@ -920,11 +928,11 @@ public class TestProvider extends AndroidTestCase {
         deletedRecords=mContext.getContentResolver().delete(allVideosUri,null,null);
 
         //Verify the quantity of deleted records
-        assertEquals("The quantity of deleted records doesn't match",deletedRecords,4);
+        assertEquals("The quantity of deleted records doesn't match",deletedRecords,2);
 
 
         cursor=mContext.getContentResolver().query(allVideosUri,null,null,null,null);
-        assertEquals("The quantity of not deleted records doesn't match",cursor.getCount(),2);
+        assertEquals("The quantity of not deleted records doesn't match",cursor.getCount(),4);
 
 
 

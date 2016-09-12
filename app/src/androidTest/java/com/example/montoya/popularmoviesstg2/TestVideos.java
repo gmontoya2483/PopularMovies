@@ -97,14 +97,34 @@ public class TestVideos extends AndroidTestCase{
 
 
 
+    }
 
 
 
+    public void testExecuteAsyncTask(){
 
 
+        final Long MOVIEID=118340L;
+        Cursor cursor;
+
+        //Delete all Videos in order to get an empty table
+        TestUtilities.deleteAllVideos(mContext);
 
 
+        TheMovieDB.updateVideos(mContext,MOVIEID);
 
+        Uri VideosByID=PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri(MOVIEID);
+
+        /*
+            do {
+             cursor= mContext.getContentResolver().query(VideosByID, null, null, null, null);
+        }while (cursor.getCount()>4);
+
+        //Verificar la cantidad de registros. Esta forma no es la correcta
+        //Previamente ejecutar "http://api.themoviedb.org/3/movie/118340/videos?api_key=nnnnnnnnnnnnn"
+        //Obtener la cantidad de registros
+        assertEquals("ERROR: La cantidad de videos difiere a la esperada",cursor.getCount(),4);
+        */
 
 
     }
