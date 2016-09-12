@@ -7,7 +7,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView"
+        android:id="@+id/video_item_PayImgView"
         android:src="@mipmap/ic_launcher"/>
     <LinearLayout
         android:layout_width="wrap_content"
@@ -16,12 +16,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Name"/>
+            android:text="@string/fake_video_name"
+            android:id="@+id/video_item_name"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Type"/>
+            android:text="@string/fake_video_type"
+            android:id="@+id/video_item_type"/>
 
 
 
