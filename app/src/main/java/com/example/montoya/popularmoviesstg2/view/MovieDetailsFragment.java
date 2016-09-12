@@ -249,4 +249,34 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
 
+    //Inner class for the videos Fragment
+    public  static class VideosFragment extends Fragment {
+
+        View mVideoView;
+
+
+        public VideosFragment(){
+
+        }
+
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+            mVideoView= inflater.inflate(R.layout.fragment_movie_details_videos, container, false);
+            return mVideoView;
+        }
+    }
+
+
+
+
+
+
 }

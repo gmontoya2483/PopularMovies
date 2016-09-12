@@ -20,8 +20,12 @@ public class MovieDetailsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        try{
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }catch (NullPointerException e){
+            e.getStackTrace();
+        }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
 
