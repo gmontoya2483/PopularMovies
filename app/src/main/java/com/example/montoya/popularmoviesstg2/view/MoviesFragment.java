@@ -94,6 +94,9 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
                     }
 
 
+                    //TODO ARREGLAR ESTA DESPROLIGIDAD PASAR SOLO EL ID y QUE EL FRAGMENT DESTINO ARME LA URI
+                    //TODO AVERIGAU ACA SI LA PELICULA TIENE VIDEOS ya CARGADOS SI NO LOS TIENE LLAMAR LA TASK PARA CARGARLOS
+                    intent.putExtra("MOVIE_ID",cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.FavoritesEntry._ID)));
                     intent.setData(SelectedMovieUri);
 
 

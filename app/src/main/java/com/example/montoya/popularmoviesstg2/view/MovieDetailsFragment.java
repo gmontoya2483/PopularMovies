@@ -33,9 +33,10 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private String FAVORITES_SELECTION;
     private final String LOG_TAG=MoviesFragment.class.getSimpleName();
 
-    static Movie mMovie;
+    private Movie mMovie;
     private Uri movieUri;
     private boolean inFavorites;
+    private static Long mMovieID;
 
 
 
@@ -50,7 +51,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
     private static final int MOVIE_DETAILS_LOADER = 1;
-    private static final int MOVIE_VIDEOS_LOADER=2;
+
 
 
     View mRootView;
@@ -79,6 +80,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        getIntentParameter();
+
         // Inflate the layout for this fragment
          mRootView= inflater.inflate(R.layout.fragment_movie_details, container, false);
 
@@ -98,7 +101,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 
         getLoaderManager().initLoader(MOVIE_DETAILS_LOADER,null,this);
-        getLoaderManager().initLoader(MOVIE_DETAILS_LOADER,null,this);
+
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -111,7 +114,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-        getIntentParameter();
+
         return new CursorLoader(getActivity(),movieUri,null,null,null,null);
     }
 
@@ -142,10 +145,12 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         if (intent != null) {
 
             movieUri=intent.getData();
+            mMovieID=intent.getLongExtra("MOVIE_ID",-1L);
 
 
         } else{
             movieUri=null;
+            mMovieID=intent.getLongExtra("MOVIE_ID",-1L);
 
         }
 
@@ -261,10 +266,18 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         ListView mVideoListView;
 
 
+        private static final int MOVIE_VIDEOS_LOADER=2;
+
+
         public VideosFragment(){
 
         }
 
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            getLoaderManager().initLoader(MOVIE_VIDEOS_LOADER,null,this);
+        }
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -294,17 +307,17 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            Uri videosByMovieID= PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri(mMovie.getId());
+            Uri videosByMovieID= PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri(mMovieID);
             return new CursorLoader(getActivity(),videosByMovieID,null,null,null,null);
         }
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-            //If the cursor is empty it is calll the activity to get the videos from Internet
             if (data.getCount()==0){
-                TheMovieDB.updateVideos(getActivity(),mMovie.getId());
+                TheMovieDB.updateVideos(getActivity(),mMovieID);
             }
+
             mVideoAdapter.swapCursor(data);
         }
 
