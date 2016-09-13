@@ -14,12 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
 import com.example.montoya.popularmoviesstg2.controler.Utils;
+import com.example.montoya.popularmoviesstg2.controler.VideoCursorAdapter;
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -30,7 +33,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private String FAVORITES_SELECTION;
     private final String LOG_TAG=MoviesFragment.class.getSimpleName();
 
-    Movie mMovie;
+    static Movie mMovie;
     private Uri movieUri;
     private boolean inFavorites;
 
@@ -47,7 +50,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
     private static final int MOVIE_DETAILS_LOADER = 1;
-    private static final int MOVIE_VIDEOS=2;
+    private static final int MOVIE_VIDEOS_LOADER=2;
 
 
     View mRootView;
@@ -94,6 +97,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 
+        getLoaderManager().initLoader(MOVIE_DETAILS_LOADER,null,this);
         getLoaderManager().initLoader(MOVIE_DETAILS_LOADER,null,this);
         super.onActivityCreated(savedInstanceState);
     }
@@ -250,9 +254,11 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
     //Inner class for the videos Fragment
-    public  static class VideosFragment extends Fragment {
+    public  static class VideosFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
         View mVideoView;
+        VideoCursorAdapter mVideoAdapter;
+        ListView mVideoListView;
 
 
         public VideosFragment(){
@@ -269,8 +275,43 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+
+            mVideoAdapter=new VideoCursorAdapter(getContext(),null,0);
+
+
+            //inflate the layout
             mVideoView= inflater.inflate(R.layout.fragment_movie_details_videos, container, false);
+
+
+            //Link the Adapter to the View
+            mVideoListView=(ListView) mVideoView.findViewById(R.id.videos_ListView);
+            mVideoListView.setAdapter(mVideoAdapter);
+
             return mVideoView;
+
+
+        }
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            Uri videosByMovieID= PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri(mMovie.getId());
+            return new CursorLoader(getActivity(),videosByMovieID,null,null,null,null);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+            //If the cursor is empty it is calll the activity to get the videos from Internet
+            if (data.getCount()==0){
+                TheMovieDB.updateVideos(getActivity(),mMovie.getId());
+            }
+            mVideoAdapter.swapCursor(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            mVideoAdapter.swapCursor(null);
+
         }
     }
 
