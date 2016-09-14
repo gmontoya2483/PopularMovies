@@ -144,7 +144,7 @@
 
 
 
-
+            <!--
 
             <fragment xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -155,13 +155,12 @@
                 android:layout_height="wrap_content"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 tools:layout="@layout/fragment_movie_details_videos" />
+            -->
 
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="HOla"/>
+
+
 
 
 
@@ -173,6 +172,19 @@
 
 
     </ScrollView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/video_section_title" />
+
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/videos_ListView">
+
+    </ListView>
 
 
 

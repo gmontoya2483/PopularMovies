@@ -19,7 +19,7 @@ public class Movie {
     private String sysnopsis;
     private String userRating;
     private String releaseDate;
-    private ArrayList<Video> videos;
+    private ArrayList<Video> videosList;
 
 
 
@@ -30,7 +30,7 @@ public class Movie {
         this.sysnopsis = sysnopsis;
         this.userRating = userRating;
         this.releaseDate = releaseDate;
-        this.videos=null;
+        this.videosList=null;
     }
 
 
@@ -66,7 +66,7 @@ public class Movie {
             this.sysnopsis=null;
             this.userRating=null;
             this.releaseDate=null;
-            this.videos=null;
+            this.videosList=null;
 
         }else{
             cursor.moveToFirst();
@@ -157,9 +157,44 @@ public class Movie {
         return isFavorite;
     }
 
-    public ArrayList<Video> getVideos() {
-            return videos;
+    public ArrayList<Video> getVideosList(Context context) {
+
+        ArrayList<Video>videos=new ArrayList<Video>();
+        Uri allVideosByMovieUri=PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri(this.id);
+        Cursor cursor;
+        Long videoId, videoMovieId;
+        String videoKey,videoName, videoType,videoSite;
+
+
+        if (this.videosList==null){
+            cursor=context.getContentResolver().query(allVideosByMovieUri,null,null,null,null);
+            if(cursor.getCount()==0){
+                videos=null;
+            }
+
+            while (cursor.moveToNext()){
+
+                videoId=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.VideosEntry._ID));
+                videoMovieId=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID));
+                videoKey=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_KEY));
+                videoName=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_NAME));
+                videoSite=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_SITE));
+                videoType=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_TYPE));
+
+                videos.add(new Video(videoId,videoMovieId,videoKey,videoName,videoSite,videoType));
+
+            }
+
+            videosList=videos;
+
+        }
+
+        return videosList;
     }
+
+
+
+
 
 
     public void setToFavorite(Context context){

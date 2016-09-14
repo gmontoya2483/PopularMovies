@@ -152,7 +152,7 @@ public class Video {
 
 
 
-    public static int deleteAllVides(Context context){
+    public static int deleteAllVideos(Context context){
         int qtyOfDeletedVideos=0;
         Uri allVideosUri=PopularMoviesContract.VideosEntry.buildAllVideosUri();
         qtyOfDeletedVideos=context.getContentResolver().delete(allVideosUri,null,null);

@@ -63,8 +63,8 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,Void> {
                 //Bulk Insert the movies
                 Movie.bulkInsertMovies(mContext,myMovieList);
 
-
-
+                //delete all Videos which are not associated to any Movie or eny Favorite
+                Video.deleteAllVideos(mContext);
 
             }
 
@@ -79,13 +79,7 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,Void> {
 
     }
 
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
 
-        //delete all Videos which are not associated to any Movie or eny Favorite
-        Video.deleteAllVides(mContext);
-    }
 
 
     /*

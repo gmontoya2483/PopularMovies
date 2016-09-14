@@ -1,8 +1,13 @@
 package com.example.montoya.popularmoviesstg2.view;
 
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,14 +21,17 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
 import com.example.montoya.popularmoviesstg2.controler.Utils;
-import com.example.montoya.popularmoviesstg2.controler.VideoCursorAdapter;
+import com.example.montoya.popularmoviesstg2.controler.VideoArrayAdapter;
 import com.example.montoya.popularmoviesstg2.model.Movie;
-import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
+import com.example.montoya.popularmoviesstg2.model.Video;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 /**
  * Created by montoya on 30.08.2016.
@@ -37,6 +45,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private Uri movieUri;
     private boolean inFavorites;
     private static Long mMovieID;
+    private ArrayList<Video> mVideosList;
+    private VideoArrayAdapter mVideoAdapter;
 
 
 
@@ -48,6 +58,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private TextView movieRating;
     private TextView movieId;
     private Button butonFavorites;
+    private ListView videoListView;
 
 
     private static final int MOVIE_DETAILS_LOADER = 1;
@@ -84,10 +95,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
         // Inflate the layout for this fragment
          mRootView= inflater.inflate(R.layout.fragment_movie_details, container, false);
-
         setLayoutObjects();
-
-
         return mRootView;
     }
 
@@ -99,9 +107,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-
         getLoaderManager().initLoader(MOVIE_DETAILS_LOADER,null,this);
-
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -122,7 +128,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
         mMovie=new Movie(data);
-
         setLayoutValues();
     }
 
@@ -137,20 +142,19 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     *  Helper Methods
     */
 
-
-
-
     private void getIntentParameter(){
         Intent intent=getActivity().getIntent();
         if (intent != null) {
 
             movieUri=intent.getData();
-            mMovieID=intent.getLongExtra("MOVIE_ID",-1L);
+            mMovieID= ContentUris.parseId(movieUri);
+            //mMovieID=intent.getLongExtra("MOVIE_ID",-1L);
 
 
         } else{
             movieUri=null;
-            mMovieID=intent.getLongExtra("MOVIE_ID",-1L);
+            mMovieID=-1L;
+
 
         }
 
@@ -159,25 +163,24 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     private void setLayoutValues(){
 
+        //Set the image
+        String imagePath= TheMovieDB.BuildImageUrl(TheMovieDB.IMAGE_SIZE_W500,mMovie.getImageThumbnail());
+        Picasso.with(getActivity()).load(imagePath).into(movieImage);
 
-            //Set the image
-            String imagePath= TheMovieDB.BuildImageUrl(TheMovieDB.IMAGE_SIZE_W500,mMovie.getImageThumbnail());
-            Picasso.with(getActivity()).load(imagePath).into(movieImage);
+        //Set the movie title
+        movieTitle.setText(mMovie.getTitle());
 
-            //Set the movie title
-            movieTitle.setText(mMovie.getTitle());
+        //Set the movie release Date
+        movieReleaseDate.setText(Utils.getYear(mMovie.getReleaseDate()));
 
-            //Set the movie release Date
-            movieReleaseDate.setText(Utils.getYear(mMovie.getReleaseDate()));
+        //Set the movie Rating
+        movieRating.setText(mMovie.getUserRating());
 
-            //Set the movie Rating
-            movieRating.setText(mMovie.getUserRating());
+        //Set the movie id
+        movieId.setText(Long.toString(mMovie.getId()));
 
-            //Set the movie id
-            movieId.setText(Long.toString(mMovie.getId()));
-
-            //Set the movie Synopsis
-            movieSynopsis.setText(mMovie.getSysnopsis());
+        //Set the movie Synopsis
+        movieSynopsis.setText(mMovie.getSysnopsis());
 
 
         //Set the favorite button text
@@ -191,6 +194,21 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
         }
 
+
+
+        //Set the
+        mVideosList=mMovie.getVideosList(getActivity());
+        if (mVideosList!=null){
+            //Set the adapter
+            mVideoAdapter=new VideoArrayAdapter(getActivity(),mVideosList);
+            videoListView.setAdapter(mVideoAdapter);
+
+
+
+        }else{
+            getVideosFromInternet();
+
+        }
 
 
 
@@ -244,13 +262,35 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
                 }
 
-
-
             }
         });
 
 
 
+        //Set the List View
+       videoListView =(ListView) mRootView.findViewById(R.id.videos_ListView);
+        //TODO add the listener on click to trigger the video intent
+
+
+
+    }
+
+
+
+    private void getVideosFromInternet(){
+
+        ConnectivityManager connMgr = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            //Execute the Async task
+            FetchVideosTask videoTask=new FetchVideosTask(getActivity(),mMovie.getId());
+            videoTask.execute();
+
+
+        } else {
+
+            Toast.makeText(getActivity(), R.string.err_no_netwaork_connection, Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -258,77 +298,88 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
 
-    //Inner class for the videos Fragment
-    public  static class VideosFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
-        View mVideoView;
-        VideoCursorAdapter mVideoAdapter;
-        ListView mVideoListView;
+    //Inner Class to fetch the videos from intermet
+    public class FetchVideosTask extends AsyncTask<Void,Void,ArrayList<Video>> {
 
-
-        private static final int MOVIE_VIDEOS_LOADER=2;
-
-
-        public VideosFragment(){
-
-        }
-
-        @Override
-        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            getLoaderManager().initLoader(MOVIE_VIDEOS_LOADER,null,this);
-        }
-
-        @Override
-        public void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
-
-        @Nullable
-        @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        private final String LOG_TAG=FetchVideosTask.class.getSimpleName();
+        private TheMovieDB mTheMovieDB = new TheMovieDB();
+        private final Context mContext;
+        private Long mMovieId;
 
 
-            mVideoAdapter=new VideoCursorAdapter(getContext(),null,0);
 
-
-            //inflate the layout
-            mVideoView= inflater.inflate(R.layout.fragment_movie_details_videos, container, false);
-
-
-            //Link the Adapter to the View
-            mVideoListView=(ListView) mVideoView.findViewById(R.id.videos_ListView);
-            mVideoListView.setAdapter(mVideoAdapter);
-
-            return mVideoView;
-
+        public FetchVideosTask(Context context,Long movieID){
+            this.mContext=context;
+            this.mMovieId=movieID;
 
         }
 
-        @Override
-        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            Uri videosByMovieID= PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri(mMovieID);
-            return new CursorLoader(getActivity(),videosByMovieID,null,null,null,null);
-        }
 
         @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        protected ArrayList<Video> doInBackground(Void... voids) {
+            ArrayList<Video> mVideosList;
 
-            if (data.getCount()==0){
-                TheMovieDB.updateVideos(getActivity(),mMovieID);
+            String JsonString=mTheMovieDB.getVideosFromInternet(mMovieId);
+            if (JsonString!=null){
+                mVideosList=new ArrayList<Video>(mTheMovieDB.JSonVideoParser(JsonString));
+                Video.bulkInsertVideos(mContext,mVideosList);
+
+            }else{
+                mVideosList=null;
             }
 
-            mVideoAdapter.swapCursor(data);
+
+
+
+            return mVideosList;
         }
 
         @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-            mVideoAdapter.swapCursor(null);
+        protected void onPostExecute(ArrayList<Video> videos) {
+
+            if (mVideosList!=null){
+                mVideosList.clear();
+            }else{
+                mVideosList=new ArrayList<Video>();
+            }
+
+
+            if(videos!=null){
+                for (Video videoItem: videos){
+                    mVideosList.add(videoItem);
+                }
+                mVideoAdapter=new VideoArrayAdapter(getActivity(),mVideosList);
+                videoListView.setAdapter(mVideoAdapter);
+            }
+
+
+
+
+
+
+        /*
+        //sacar luego del test
+
+        Log.i(LOG_TAG,"FINALIZO LA CARGA DE VIDEOS DESDE INTERNET");
+        Uri AllVideosUri= PopularMoviesContract.VideosEntry.buildAllVideosUri();
+        Cursor cursor= mContext.getContentResolver().query(AllVideosUri,null,null,null,null);
+
+        while (cursor.moveToNext()){
+            System.out.println("VIDEO INFO:   _ID:"+cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.VideosEntry._ID))
+            +" Key:"+cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_KEY))
+            +" name:" + cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_NAME))
+            +" site:" + cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_SITE))
+            +" type:" + cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_TYPE))
+            );
+
+        }
+        */
+
+
 
         }
     }
-
-
 
 
 
