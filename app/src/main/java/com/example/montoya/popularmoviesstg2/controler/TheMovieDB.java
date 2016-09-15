@@ -61,6 +61,9 @@ public class TheMovieDB {
 
 
 
+
+
+
     // Method to build the URI for getting the  Movie of a particular enPpointer popular or top_rated oder
     public URL BuildUri(String endPointFilter){
 

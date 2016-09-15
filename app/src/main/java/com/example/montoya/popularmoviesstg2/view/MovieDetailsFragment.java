@@ -17,6 +17,7 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -269,7 +270,16 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
         //Set the List View
        videoListView =(ListView) mRootView.findViewById(R.id.videos_ListView);
-        //TODO add the listener on click to trigger the video intent
+       //Add the listener
+       videoListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Video video= (Video) videoListView.getItemAtPosition(position);
+                Video.watchVideo(getActivity(),video.getKey());
+
+            }
+        });
 
 
 

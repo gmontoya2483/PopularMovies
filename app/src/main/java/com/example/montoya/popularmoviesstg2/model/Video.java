@@ -1,13 +1,17 @@
 package com.example.montoya.popularmoviesstg2.model;
 
+import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 
 import java.util.ArrayList;
+
+import static android.support.v4.app.ActivityCompat.startActivity;
 
 /**
  * Created by montoya on 06.09.2016.
@@ -20,6 +24,14 @@ public class Video {
     private String name;
     private String site;
     private String type;
+
+
+
+
+
+    //YouTube URLs:
+    public static final String YOUTUBE_VND="vnd.youtube:";
+    public static final String YOUTUBE_URL="http://www.youtube.com/watch?v=";
 
 
     //Valid video Site
@@ -159,6 +171,20 @@ public class Video {
 
         return qtyOfDeletedVideos;
 
+    }
+
+
+
+
+    public static void watchVideo(Context context, String videoKey){
+        try{
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_VND + videoKey));
+            context.startActivity(intent);
+        }catch (ActivityNotFoundException e){
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_URL + videoKey));
+            context.startActivity(intent);
+
+        }
     }
 
 
