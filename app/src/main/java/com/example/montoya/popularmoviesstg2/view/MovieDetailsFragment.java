@@ -165,7 +165,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private void setLayoutValues(){
 
         //Set the image
-        String imagePath= TheMovieDB.BuildImageUrl(TheMovieDB.IMAGE_SIZE_W500,mMovie.getImageThumbnail());
+        String imagePath= TheMovieDB.BuildImageUrl(TheMovieDB.IMAGE_SIZE_W342,mMovie.getImageThumbnail());
         Picasso.with(getActivity()).load(imagePath).into(movieImage);
 
         //Set the movie title
@@ -365,26 +365,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
 
-
-
-
-        /*
-        //sacar luego del test
-
-        Log.i(LOG_TAG,"FINALIZO LA CARGA DE VIDEOS DESDE INTERNET");
-        Uri AllVideosUri= PopularMoviesContract.VideosEntry.buildAllVideosUri();
-        Cursor cursor= mContext.getContentResolver().query(AllVideosUri,null,null,null,null);
-
-        while (cursor.moveToNext()){
-            System.out.println("VIDEO INFO:   _ID:"+cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.VideosEntry._ID))
-            +" Key:"+cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_KEY))
-            +" name:" + cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_NAME))
-            +" site:" + cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_SITE))
-            +" type:" + cursor.getString(cursor.getColumnIndex(PopularMoviesContract.VideosEntry.COLUMN_VIDEO_TYPE))
-            );
-
-        }
-        */
 
 
 
