@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Popular Movies STG2</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_settings">Settings</string>
@@ -10,6 +10,9 @@
     <string name="label_id">ID:</string>
     <string name="btn_MarkAsFavorites">MARK AS FAVORITES</string>
     <string name="btn_RemoveFavorites">REMOVE FROM FAVORITES</string>
+
+
+    <string name="formated_rating"> <xliff:g id="value">%1$s</xliff:g>/10</string>
 
 
 

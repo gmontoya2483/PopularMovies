@@ -175,7 +175,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         movieReleaseDate.setText(Utils.getYear(mMovie.getReleaseDate()));
 
         //Set the movie Rating
-        movieRating.setText(mMovie.getUserRating());
+        //movieRating.setText(mMovie.getUserRating());
+        movieRating.setText(getActivity().getString(R.string.formated_rating,mMovie.getUserRating()));
 
         //Set the movie id
         movieId.setText(Long.toString(mMovie.getId()));

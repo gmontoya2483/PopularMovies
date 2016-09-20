@@ -51,6 +51,7 @@ public class TheMovieDB {
     private final String TOP_RATED_END_POINT="top_rated";
     private final String PAGE_NUM_PARAM="page";
     private final String VIDEOS_PATH="videos";
+    private final String REVIEWS_PATH="reviews";
 
 
 
@@ -401,6 +402,42 @@ public class TheMovieDB {
 
         } catch (JSONException e) {
             Log.e (LOG_TAG,"Error: "+ e.getStackTrace(),e);
+            return null;
+        }
+
+
+    }
+
+
+
+
+
+     /*
+    * This section applies to the method to manage the Reviews.
+    * http://api.themoviedb.org/3/movie/{id}/reviews?api_key=?
+    *
+    */
+
+
+    // Method to build the URI for getting the Videos of a particular Movie
+    public URL BuildReviewsUri(Long id){
+
+
+        Uri buildUri= Uri.parse(BASE_URL).buildUpon()
+                .appendPath(MOVIE_PATH)
+                .appendPath(String.valueOf(id))
+                .appendPath(REVIEWS_PATH)
+                .appendQueryParameter(APPID_PARAM,API_KEY)
+                .build();
+
+
+        try {
+
+            URL url=new URL(buildUri.toString());
+            return url;
+        } catch (MalformedURLException e) {
+
+            Log.e(LOG_TAG,"Error:"+e.getStackTrace());
             return null;
         }
 

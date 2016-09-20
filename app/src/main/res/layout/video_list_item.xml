@@ -5,14 +5,15 @@
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:id="@+id/video_item_PayImgView"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@drawable/you_tube"/>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
