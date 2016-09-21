@@ -18,6 +18,7 @@ public class PopularMoviesContract {
     public static final String PATH_MOVIES = "movies";
     public static final String PATH_FAVORITES = "favorites";
     public static final String PATH_VIDEOS = "videos";
+    public static final String PATH_REVIEWS = "reviews";
 
 
 
@@ -185,6 +186,57 @@ public class PopularMoviesContract {
 
 
         }
+
+
+
+    }
+
+
+
+    public static final class ReviewsEntry implements BaseColumns{
+
+        // Table name
+        public static final String TABLE_NAME = "reviews";
+
+        //Columns
+        public static final String COLUMN_REVIEW_MOVIE_ID = "rev_mov_id"; //INTEGER NOT NULL
+        public static final String COLUMN_REVIEW_AUTHOR = "rev_author"; //TEXT NOT NULL
+        public static final String COLUMN_REVIEW_CONTENT = "rev_content"; //TEXT NOT NULL
+        public static final String COLUMN_REVIEW_URL = "rev_url"; //TEXT NOT NULL
+
+
+        // Create content uri
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_REVIEWS)
+                .build();
+
+        // create cursor of base type directory for multiples entries
+        public static final String CONTENT_DIR_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REVIEWS;
+
+        // create cursor of base type item for single entry
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REVIEWS;
+
+
+
+
+        public static Uri buildReviewsByMovieIdUri(long movieId) {
+
+            return BASE_CONTENT_URI.buildUpon()
+                    .appendPath(PATH_REVIEWS + "_" + PATH_MOVIES)
+                    .appendPath(Long.toString(movieId))
+                    .build();
+        }
+
+
+
+        public static Uri buildAllReviewsUri(){
+            return CONTENT_URI;
+
+
+        }
+
+
+
 
 
 

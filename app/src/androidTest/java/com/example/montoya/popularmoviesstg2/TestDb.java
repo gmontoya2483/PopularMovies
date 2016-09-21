@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.Review;
 import com.example.montoya.popularmoviesstg2.model.Video;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesDbHelper;
@@ -46,6 +47,9 @@ public class TestDb extends AndroidTestCase{
         final HashSet <String> tablenameHasSet= new HashSet<String>();
         tablenameHasSet.add(PopularMoviesContract.MoviesEntry.TABLE_NAME);
         tablenameHasSet.add(PopularMoviesContract.FavoritesEntry.TABLE_NAME);
+        tablenameHasSet.add(PopularMoviesContract.VideosEntry.TABLE_NAME);
+        tablenameHasSet.add(PopularMoviesContract.ReviewsEntry.TABLE_NAME);
+
 
 
         mContext.deleteDatabase(PopularMoviesDbHelper.DATABASE_NAME);
@@ -393,6 +397,109 @@ public class TestDb extends AndroidTestCase{
         cursor=db.rawQuery("SELECT * FROM "+PopularMoviesContract.VideosEntry.TABLE_NAME+"" +
                         " WHERE "+ PopularMoviesContract.VideosEntry._ID +"=?"
                 , new String []{Long.toString(videoRowId)});
+
+        // Verify if the query got records
+        assertFalse( "Error: The fake record was not deleted", cursor.moveToFirst() );
+
+
+        cursor.close();
+        db.close();
+
+
+    }
+
+
+
+    public void testTableReviewStructure() throws Throwable{
+
+
+        final HashSet<String> reviewsColumnHashSet=new HashSet<String>();
+        reviewsColumnHashSet.add(PopularMoviesContract.ReviewsEntry._ID);
+        reviewsColumnHashSet.add(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_MOVIE_ID);
+        reviewsColumnHashSet.add(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_AUTHOR);
+        reviewsColumnHashSet.add(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_CONTENT);
+        reviewsColumnHashSet.add(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_URL);
+
+
+
+        SQLiteDatabase db=new PopularMoviesDbHelper(this.mContext).getReadableDatabase();
+        assertEquals("Error: Database is not opened correctly",true,db.isOpen());
+
+        Cursor cursor=db.rawQuery("PRAGMA table_info("+PopularMoviesContract.ReviewsEntry.TABLE_NAME+")",null);
+        assertTrue("Error: This means that we were unable to query the database for table information.",
+                cursor.moveToFirst());
+
+        int columnNameIndex= cursor.getColumnIndex("name");
+
+        do {
+            String columnName = cursor.getString(columnNameIndex);
+            reviewsColumnHashSet.remove(columnName);
+        } while(cursor.moveToNext());
+
+        assertTrue("Error: The table "+PopularMoviesContract.ReviewsEntry.TABLE_NAME +" doesn't contain all of the required  columns",reviewsColumnHashSet.isEmpty());
+
+        cursor.close();
+        db.close();
+    }
+
+
+
+
+    public void testInsertReviewsIntoReviewsTable(){
+
+
+        long reviewRowId;
+        Review review =new Review (3214L,"Fake Author","Fake Content","Fake URL");
+
+        SQLiteDatabase db=new PopularMoviesDbHelper(this.mContext).getWritableDatabase();
+        assertEquals("Error: Database is not opened correctly",true,db.isOpen());
+
+
+        ContentValues testValues=review.getReviewValues();
+        reviewRowId=db.insert(PopularMoviesContract.ReviewsEntry.TABLE_NAME,null,testValues);
+
+        //Verify that the Inserted Video ID is not -1L
+        assertFalse("Error: Expected Review ID is -1L: ",reviewRowId==-1L);
+
+
+        Cursor cursor=db.rawQuery("SELECT * FROM "+PopularMoviesContract.ReviewsEntry.TABLE_NAME+"" +
+                        " WHERE "+ PopularMoviesContract.ReviewsEntry._ID +"=?"
+                , new String []{Long.toString(reviewRowId)});
+
+
+        // Verify if the query got records
+        assertTrue( "Error: No Records returned from location query", cursor.moveToFirst() );
+
+
+        //Verify each field
+
+        int indexId=cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry._ID);
+        int indexMovieId=cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_MOVIE_ID);
+        int indexAuthor=cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_AUTHOR);
+        int indexContent=cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_CONTENT);
+        int indexUrl=cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_URL);
+
+
+        assertTrue("Error: Movie ID doesn´t Match", review.getMovieId()==cursor.getLong(indexMovieId));
+        assertEquals("Error: Author doesn´t Match", review.getAuthor(),cursor.getString(indexAuthor));
+        assertEquals("Error: Content doesn´t Match", review.getContent(),cursor.getString(indexContent));
+        assertEquals("Error: Url doesn´t Match", review.getUrl(),cursor.getString(indexUrl));
+
+        // Move the cursor to demonstrate that there is only one record in the database
+        assertFalse( "Error: More than one record returned from the query",cursor.moveToNext() );
+
+
+
+
+
+
+        //Verify that the inserted record is deleted correctly
+        int qtyOfDeletedRecords=db.delete(PopularMoviesContract.ReviewsEntry.TABLE_NAME,PopularMoviesContract.ReviewsEntry._ID +"=?",new String []{Long.toString(reviewRowId)});
+        assertEquals("Error: record was not deleted correctly",1,qtyOfDeletedRecords);
+
+        cursor=db.rawQuery("SELECT * FROM "+PopularMoviesContract.ReviewsEntry.TABLE_NAME+"" +
+                        " WHERE "+ PopularMoviesContract.ReviewsEntry._ID +"=?"
+                , new String []{Long.toString(reviewRowId)});
 
         // Verify if the query got records
         assertFalse( "Error: The fake record was not deleted", cursor.moveToFirst() );

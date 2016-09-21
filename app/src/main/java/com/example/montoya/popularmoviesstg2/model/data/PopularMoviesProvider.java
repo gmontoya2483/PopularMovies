@@ -28,6 +28,9 @@ public class PopularMoviesProvider extends ContentProvider {
     public static final int VIDEO=300;
     public static final int VIDEO_WITH_MOVIE_ID=310;
     public static final int VIDEO_WITH_KEY=320;
+    public static final int REVIEW=400;
+    public static final int REVIEW_WITH_MOVIE_ID=410;
+
 
 
 
@@ -53,6 +56,11 @@ public class PopularMoviesProvider extends ContentProvider {
         matcher.addURI(authority, PopularMoviesContract.PATH_VIDEOS + "/*",VIDEO_WITH_KEY);
         matcher.addURI(authority, PopularMoviesContract.PATH_VIDEOS, VIDEO);
         matcher.addURI(authority, PopularMoviesContract.PATH_VIDEOS +"_"+PopularMoviesContract.PATH_MOVIES+"/#",VIDEO_WITH_MOVIE_ID);
+
+        matcher.addURI(authority, PopularMoviesContract.PATH_REVIEWS, REVIEW);
+        matcher.addURI(authority, PopularMoviesContract.PATH_REVIEWS +"_"+PopularMoviesContract.PATH_MOVIES+"/#",REVIEW_WITH_MOVIE_ID);
+
+
 
 
 
@@ -95,6 +103,10 @@ public class PopularMoviesProvider extends ContentProvider {
                 return PopularMoviesContract.VideosEntry.CONTENT_ITEM_TYPE;
             case VIDEO_WITH_MOVIE_ID:
                 return PopularMoviesContract.VideosEntry.CONTENT_DIR_TYPE;
+            case REVIEW:
+                return PopularMoviesContract.ReviewsEntry.CONTENT_DIR_TYPE;
+            case REVIEW_WITH_MOVIE_ID:
+                return PopularMoviesContract.ReviewsEntry.CONTENT_DIR_TYPE;
 
 
             default:
@@ -199,6 +211,14 @@ public class PopularMoviesProvider extends ContentProvider {
                         sortOrder
                 );
                 break;
+
+            case REVIEW:
+                retCursor=null;
+                break;
+            case REVIEW_WITH_MOVIE_ID:
+                retCursor=null;
+                break;
+
 
 
 
