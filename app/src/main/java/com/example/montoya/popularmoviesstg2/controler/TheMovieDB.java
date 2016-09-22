@@ -447,6 +447,137 @@ public class TheMovieDB {
 
 
 
+    //Method to get the Json String for the Reviews
+    public String getReviewsFromInternet(Long movieId){
+        HttpURLConnection urlConnection=null;
+        BufferedReader reader=null;
+        String videosJsonStr=null;
+        URL url=this.BuildReviewsUri(movieId);
+
+
+        //Create the request to the MovieDB and Open the connection
+        try {
+            urlConnection=(HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+
+            //Read the input stream into a String
+            InputStream inputStream=urlConnection.getInputStream();
+            StringBuffer buffer=new StringBuffer();
+            if(inputStream!=null){
+                reader=new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line=reader.readLine())!=null){
+                    buffer.append (line+"\n");
+                }
+
+                if (buffer.length()!=0){
+                    videosJsonStr=buffer.toString();
+                }
+
+
+            }
+        } catch (IOException e) {
+            Log.e(LOG_TAG,"Error: "+e.getStackTrace(),e);
+            return null;
+
+        }finally {
+            if(urlConnection !=null){
+                urlConnection.disconnect();
+            }
+            if (reader !=null){
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    Log.e(LOG_TAG,"Error Closing: "+e.getStackTrace(),e);
+                }
+            }
+        }
+
+
+        return videosJsonStr;
+
+
+    }
+
+
+/*
+
+    //Parser method which gets a JSon String and return an ArrayList of Movies
+    public ArrayList<Video> JSonReviewParser (String JsonMessage)  {
+
+
+
+        ArrayList<Review> myReviewList = new ArrayList<Review>();
+
+
+        final String OWM_RESULTS="results";
+        final String KEY="key";
+        final String NAME="name";
+        final String SITE="site";
+        final String TYPE="type";
+        final String MOVIE_ID="id";
+
+
+        String movieID;
+
+
+
+
+        JSONObject videoJsonList= null;
+        JSONObject videoJson=null;
+        try {
+            videoJsonList = new JSONObject(JsonMessage);
+            movieID=videoJsonList.getString(MOVIE_ID);
+            JSONArray videoJsonArray=videoJsonList.getJSONArray(OWM_RESULTS);
+
+
+            for (int i=0;i <videoJsonArray.length();i++){
+
+
+                String key="";
+                String name="";
+                String site="";
+                String type="";
+
+
+
+
+                videoJson=videoJsonArray.getJSONObject(i);
+                key=videoJson.getString(KEY);
+                name=videoJson.getString(NAME);
+                site=videoJson.getString(SITE);
+                type=videoJson.getString(TYPE);
+
+
+                myVideoList.add(new Video(Long.parseLong(movieID),key,name,site,type));
+
+
+            }
+
+            return myVideoList;
+
+
+
+        } catch (JSONException e) {
+            Log.e (LOG_TAG,"Error: "+ e.getStackTrace(),e);
+            return null;
+        }
+
+
+    }
+
+
+
+*/
+
+
+
+
+
+
+
 
 
 
