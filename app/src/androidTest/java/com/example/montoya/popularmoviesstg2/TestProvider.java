@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.test.AndroidTestCase;
 
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.Review;
 import com.example.montoya.popularmoviesstg2.model.Video;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesDbHelper;
@@ -15,6 +16,8 @@ import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import static com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri;
 
 
 /**
@@ -803,7 +806,7 @@ public class TestProvider extends AndroidTestCase {
 
 
 
-        Uri videosByMovieUri=PopularMoviesContract.VideosEntry.buildVideosByMovieIdUri(3L);
+        Uri videosByMovieUri= buildVideosByMovieIdUri(3L);
         cursor=mContext.getContentResolver().query(videosByMovieUri,null,null,null,null);
 
 
@@ -945,14 +948,273 @@ public class TestProvider extends AndroidTestCase {
         TestUtilities.deleteAllFavoritesRecords(mContext);
 
 
+    }
 
 
 
 
+    public void testQueryAllReviewsFromProvider(){
 
+        final String TESTCASE_NAME="testQueryAllReviewsFromProvider()";
+
+
+        ContentValues videoContentValues;
+        HashMap<Long,Uri> QueryUris=new HashMap<Long,Uri>();
+        Uri allReviewsUri;
+        UriMatcher testMatcher= PopularMoviesProvider.buildUriMatcher();
+        Review review;
+
+        //Create an ArrayList with several Reviews
+        HashMap<Long,Review> mReviews=new HashMap<Long,Review>();
+        mReviews.put(1L,new Review(1L,"FakeAuthor1","FakeContent1","FakeURL1"));
+        mReviews.put(2L,new Review(1L,"FakeAuthor2","FakeContent2","FakeURL2"));
+        mReviews.put(3L,new Review(2L,"FakeAuthor3","FakeContent3","FakeURL3"));
+        mReviews.put(4L,new Review(3L,"FakeAuthor4","FakeContent4","FakeURL4"));
+        mReviews.put(5L,new Review(3L,"FakeAuthor5","FakeContent5","FakeURL5"));
+        mReviews.put(6L,new Review(3L,"FakeAuthor6","FakeContent6","FakeURL6"));
+        mReviews.put(7L,new Review(4L,"FakeAuthor7","FakeContent7","FakeURL7"));
+        mReviews.put(8L,new Review(4L,"FakeAuthor8","FakeContent8","FakeURL8"));
+        mReviews.put(9L,new Review(6L,"FakeAuthor9","FakeContent9","FakeURL9"));
+        mReviews.put(10L,new Review(5L,"FakeAuthor10","FakeContent10","FakeURL10"));
+        mReviews.put(11L,new Review(7L,"FakeAuthor11","FakeContent11","FakeURL11"));
+        mReviews.put(12L,new Review(7L,"FakeAuthor12","FakeContent12","FakeURL12"));
+
+
+
+        //Delete all reviews records to get an empty Reviews table
+        TestUtilities.deleteAllReviews(mContext);
+
+
+        //Insert all the Reviews and get a reference to its query string
+
+        for (long i=1;i<=mReviews.size();i++)
+        {
+            review=mReviews.get(i);
+            videoContentValues = review.getReviewValues();
+            QueryUris.put(i,mContext.getContentResolver().insert (PopularMoviesContract.ReviewsEntry.buildAllReviewsUri(), videoContentValues));
+        }
+
+
+
+
+        //Verify that all movies where inseted into the dataBase
+        assertEquals("Error: Size of the Hashtable and the Arraylist of Reviwes is not the same",mReviews.size(),QueryUris.size());
+
+
+        //Verify the Review matcher
+        allReviewsUri=PopularMoviesContract.ReviewsEntry.buildAllReviewsUri();
+        assertEquals("Error: REVIEW was matched incorrectly.",testMatcher.match(allReviewsUri), PopularMoviesProvider.REVIEW);
+
+        //Execute the query
+        Cursor cursor=mContext.getContentResolver().query(allReviewsUri,null,null,null,null);
+
+        //verify that the cursor is not empty
+        assertTrue("Error: Cursor is empty",cursor.moveToFirst());
+
+        //verify that the query got all records
+        assertEquals("Error: Size of the Hashtable and the Arraylist of of movies is not the same",mReviews.size(),cursor.getCount());
+
+
+        //Delete all reviews records to leave an Empty Movie table for further Test cases
+        TestUtilities.deleteAllReviews(mContext);
+
+
+        cursor.close();
+
+    }
+
+
+
+
+    public void testInsertReviewFromProvider(){
+
+        final String TESTCASE_NAME="testInsertReviewFromProvider()";
+
+        ContentValues reviewValues;
+        Uri allReviewsUri=PopularMoviesContract.ReviewsEntry.buildAllReviewsUri();
+        Uri insertedReviewUri;
+
+        //Delete all reviews records to get an empty Movie table
+        TestUtilities.deleteAllReviews(mContext);
+
+
+        Review review=new Review(1L,"FakeAuthor","FakeContent","FakeURL");
+        reviewValues=review.getReviewValues();
+
+
+        insertedReviewUri=mContext.getContentResolver().insert(allReviewsUri,reviewValues);
+
+        //Verify theinsertedVideoUri is not null
+        assertTrue(TESTCASE_NAME+" - InsertedReviewUri is NULL", insertedReviewUri!=null);
+
+
+        //Get the Record which was just created
+        Cursor cursor;
+        cursor=mContext.getContentResolver().query(insertedReviewUri,null,null,null,null);
+
+        //Verify that only 1 record was taken
+        assertTrue(TESTCASE_NAME+" - More than 1 record was taken", cursor.getCount()==1);
+
+        //Verify that the cursor is not empty and Move it to the first record
+        assertTrue(TESTCASE_NAME+" - Not possible to move the cursor to the first record",cursor.moveToFirst());
+
+        //get the values from the cursor
+        Long _id=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry._ID));
+        Long movieId=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_MOVIE_ID));
+        String author=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_AUTHOR));
+        String content=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_CONTENT));
+        String url=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_URL));
+
+        //Compare the values
+        assertEquals(TESTCASE_NAME+" - Movie ID doesn´t match",movieId,review.getMovieId());
+        assertEquals(TESTCASE_NAME+" - author doesn´t match",author,review.getAuthor());
+        assertEquals(TESTCASE_NAME+" - content doesn´t match",content,review.getContent());
+        assertEquals(TESTCASE_NAME+" - Url doesn´t match",url,review.getUrl());
+
+
+        //Delete all Review records to leave an Empty Movie table for further Test cases
+        TestUtilities.deleteAllReviews(mContext);
+
+
+        cursor.close();
+    }
+
+
+
+    public void testQueryReviewsByMovieID(){
+
+        final String TESTCASE_NAME="testQueryReviewsByMovieID()";
+
+        Cursor cursor;
+        ArrayList<Review> reviewList =new ArrayList<Review>();
+        ContentValues reviewValues;
+        Uri allReviewsUri=PopularMoviesContract.ReviewsEntry.buildAllReviewsUri();
+
+        reviewList.add(new Review(1L,"FakeAuthor1","FakeContent1","FakeURL1"));
+        reviewList.add(new Review(1L,"FakeAuthor2","FakeContent2","FakeURL2"));
+        reviewList.add(new Review(2L,"FakeAuthor3","FakeContent3","FakeURL3"));
+        reviewList.add(new Review(3L,"FakeAuthor4","FakeContent4","FakeURL4"));
+        reviewList.add(new Review(3L,"FakeAuthor5","FakeContent5","FakeURL5"));
+        reviewList.add(new Review(3L,"FakeAuthor6","FakeContent6","FakeURL6"));
+        reviewList.add(new Review(4L,"FakeAuthor7","FakeContent7","FakeURL7"));
+        reviewList.add(new Review(4L,"FakeAuthor8","FakeContent8","FakeURL8"));
+        reviewList.add(new Review(6L,"FakeAuthor9","FakeContent9","FakeURL9"));
+        reviewList.add(new Review(5L,"FakeAuthor10","FakeContent10","FakeURL10"));
+        reviewList.add(new Review(7L,"FakeAuthor11","FakeContent11","FakeURL11"));
+        reviewList.add(new Review(7L,"FakeAuthor12","FakeContent12","FakeURL12"));
+
+
+
+
+        //Delete all review records to ensure that we have an Empty Video table
+        TestUtilities.deleteAllReviews(mContext);
+
+
+        //Instert the test data
+        for (Review review:reviewList){
+
+            reviewValues=review.getReviewValues();
+            mContext.getContentResolver().insert(allReviewsUri,reviewValues);
+
+
+        }
+
+
+
+        Uri reviewsByMovieUri=PopularMoviesContract.ReviewsEntry.buildReviewsByMovieIdUri(3L);
+        cursor=mContext.getContentResolver().query(reviewsByMovieUri,null,null,null,null);
+
+
+        //Verify that the query got only 3 records
+        assertEquals(TESTCASE_NAME+" - Quantity of Records doesn´t match",cursor.getCount(),3);
+
+
+
+        //Delete all movies records to leave an Empty Video table for further Test cases
+        TestUtilities.deleteAllReviews(mContext);
 
 
     }
+
+
+
+    public void testDeleteReviewsFromTheProvider(){
+
+        Movie movie=new Movie(1L,"FakeTitle","FakeImage","FakeSyznopsis","FakeUserRating","FakeReleaseDate");
+        Movie movie2=new Movie (2L,"FakeTitle","FakeImage","FakeSyznopsis","FakeUserRating","FakeReleaseDate");
+
+        int deletedRecords;
+        Cursor cursor;
+
+
+        //Delete all Videos in order to leave an empty empty table for further tests
+        TestUtilities.deleteAllReviews(mContext);
+
+        //Delete all favorites entries
+        TestUtilities.deleteAllFavoritesRecords(mContext);
+
+        //Delete all movie entries
+        TestUtilities.deleteAllMoviesRecords(mContext);
+
+        //add the movie into favorite
+        movie.setToFavorite(mContext);
+
+        //Insert Movie2
+        movie2.insertMovie(mContext);
+
+
+
+        //Insert several videos
+        int insertedRecords;
+        ContentValues values[];
+        Uri allReviewUri=PopularMoviesContract.ReviewsEntry.buildAllReviewsUri();
+
+        ArrayList<Review> reviewList=new ArrayList<Review>();
+        reviewList.add(new Review(1L,"FakeAuthor1","FakeContent1","FakeURL1"));
+        reviewList.add(new Review(1L,"FakeAuthor2","FakeContent2","FakeURL2"));
+        reviewList.add(new Review(2L,"FakeAuthor3","FakeContent3","FakeURL3"));
+        reviewList.add(new Review(3L,"FakeAuthor4","FakeContent4","FakeURL4"));
+        reviewList.add(new Review(3L,"FakeAuthor5","FakeContent5","FakeURL5"));
+        reviewList.add(new Review(3L,"FakeAuthor6","FakeContent6","FakeURL6"));
+        reviewList.add(new Review(4L,"FakeAuthor7","FakeContent7","FakeURL7"));
+        reviewList.add(new Review(4L,"FakeAuthor8","FakeContent8","FakeURL8"));
+        reviewList.add(new Review(2L,"FakeAuthor9","FakeContent9","FakeURL9"));
+        reviewList.add(new Review(5L,"FakeAuthor10","FakeContent10","FakeURL10"));
+        reviewList.add(new Review(7L,"FakeAuthor11","FakeContent11","FakeURL11"));
+        reviewList.add(new Review(7L,"FakeAuthor12","FakeContent12","FakeURL12"));
+
+
+
+
+        values=Review.getReviewContentValueArray(reviewList);
+        insertedRecords=mContext.getContentResolver().bulkInsert(allReviewUri,values);
+
+
+        //Verify the delete function
+        deletedRecords=mContext.getContentResolver().delete(allReviewUri,null,null);
+
+        //Verify the quantity of deleted records
+        assertEquals("The quantity of deleted records doesn't match",deletedRecords,8);
+
+
+        cursor=mContext.getContentResolver().query(allReviewUri,null,null,null,null);
+        assertEquals("The quantity of not deleted records doesn't match",cursor.getCount(),4);
+
+
+
+
+
+        //Delete all reviews in order to leave an empty empty table for further tests
+        TestUtilities.deleteAllReviews(mContext);
+
+        //Delete all favorites and Moviesentries
+        TestUtilities.deleteAllFavoritesRecords(mContext);
+        TestUtilities.deleteAllMoviesRecords(mContext);
+
+
+    }
+
+
 
 
 

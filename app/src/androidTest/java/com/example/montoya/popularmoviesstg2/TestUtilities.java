@@ -207,4 +207,26 @@ public class TestUtilities extends AndroidTestCase{
 
 
 
+    static int deleteAllReviews(Context context){
+
+        Cursor cursor;
+        SQLiteDatabase db=new PopularMoviesDbHelper(context).getWritableDatabase();
+        int qtyOfDeletedRecords=db.delete(PopularMoviesContract.ReviewsEntry.TABLE_NAME,null,null);
+
+        cursor=db.rawQuery("SELECT "+PopularMoviesContract.ReviewsEntry._ID+" FROM "+PopularMoviesContract.ReviewsEntry.TABLE_NAME,null);
+        assertFalse("Error: DeleteAllReviews - Not all reviews records were deleted",cursor.moveToFirst());
+
+        db.close();
+
+        return qtyOfDeletedRecords;
+
+
+
+
+    }
+
+
+
+
+
 }

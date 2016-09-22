@@ -32,6 +32,7 @@ public class TestUriMatcher extends AndroidTestCase {
 
     private static String EXPECTED_ALL_REVIEW_URI="content://com.example.montoya.popularmovies/reviews";
     private static String EXPECTED_REVIEW_WITH_MOVIE_ID_URI="content://com.example.montoya.popularmovies/reviews_movies/123";
+    private static String EXPECTED_REVIEW_BY_ID_URI="content://com.example.montoya.popularmovies/reviews/123";
 
 
 
@@ -47,6 +48,7 @@ public class TestUriMatcher extends AndroidTestCase {
     private Uri CONSTRUCTED_VIDEO_WITH_KEY_URI;
     private Uri CONSTRUCTED_ALL_REVIEW_URI;
     private Uri CONSTRUCTED_REVIEW_WITH_MOVIE_ID_URI;
+    private Uri CONSTRUCTED_REVIEW_BY_ID_URI;
 
 
 
@@ -68,6 +70,7 @@ public class TestUriMatcher extends AndroidTestCase {
 
         CONSTRUCTED_ALL_REVIEW_URI=ReviewsEntry.buildAllReviewsUri();
         CONSTRUCTED_REVIEW_WITH_MOVIE_ID_URI=ReviewsEntry.buildReviewsByMovieIdUri(123L);
+        CONSTRUCTED_REVIEW_BY_ID_URI=ReviewsEntry.buildReviewsById(123L);
 
 
 
@@ -192,6 +195,12 @@ public class TestUriMatcher extends AndroidTestCase {
         ////Verify the construction of the ALL Videos URI by Movies
         assertEquals("Error: Reviews by movie URI doesn't match",EXPECTED_REVIEW_WITH_MOVIE_ID_URI,CONSTRUCTED_REVIEW_WITH_MOVIE_ID_URI.toString());
 
+        ////Verify the construction of the ALL Videos URI by Movies
+        assertEquals("Error: Reviews by ID URI doesn't match",EXPECTED_REVIEW_BY_ID_URI,CONSTRUCTED_REVIEW_BY_ID_URI.toString());
+
+
+
+
 
     }
 
@@ -207,6 +216,11 @@ public class TestUriMatcher extends AndroidTestCase {
 
         //Verify the REVIEW_WITH MOVIE_ID matcher
         assertEquals("Error: REVIEW by Movie URI was matched incorrectly.",testMatcher.match(CONSTRUCTED_REVIEW_WITH_MOVIE_ID_URI), PopularMoviesProvider.REVIEW_WITH_MOVIE_ID);
+
+
+        //Verify the REVIEW_BY_ID matcher
+        assertEquals("Error: REVIEW by ID URI was matched incorrectly.",testMatcher.match(CONSTRUCTED_REVIEW_BY_ID_URI), PopularMoviesProvider.REVIEW_WITH_ID);
+
 
 
 

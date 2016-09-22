@@ -236,6 +236,19 @@ public class PopularMoviesContract {
         }
 
 
+        public static Uri buildReviewsById(long _id){
+
+            return BASE_CONTENT_URI.buildUpon()
+                    .appendPath(PATH_REVIEWS)
+                    .appendPath(Long.toString(_id))
+                    .build();
+
+
+
+        }
+
+
+
 
 
 

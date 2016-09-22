@@ -26,10 +26,11 @@ public class PopularMoviesProvider extends ContentProvider {
     public static final int FAVORITE=200;
     public static final int FAVORITE_WITH_ID=210;
     public static final int VIDEO=300;
-    public static final int VIDEO_WITH_MOVIE_ID=310;
-    public static final int VIDEO_WITH_KEY=320;
+    public static final int VIDEO_WITH_MOVIE_ID=320;
+    public static final int VIDEO_WITH_KEY=330;
     public static final int REVIEW=400;
-    public static final int REVIEW_WITH_MOVIE_ID=410;
+    public static final int REVIEW_WITH_ID=410;
+    public static final int REVIEW_WITH_MOVIE_ID=420;
 
 
 
@@ -59,6 +60,7 @@ public class PopularMoviesProvider extends ContentProvider {
 
         matcher.addURI(authority, PopularMoviesContract.PATH_REVIEWS, REVIEW);
         matcher.addURI(authority, PopularMoviesContract.PATH_REVIEWS +"_"+PopularMoviesContract.PATH_MOVIES+"/#",REVIEW_WITH_MOVIE_ID);
+        matcher.addURI(authority, PopularMoviesContract.PATH_REVIEWS + "/#",REVIEW_WITH_ID);
 
 
 
@@ -105,8 +107,11 @@ public class PopularMoviesProvider extends ContentProvider {
                 return PopularMoviesContract.VideosEntry.CONTENT_DIR_TYPE;
             case REVIEW:
                 return PopularMoviesContract.ReviewsEntry.CONTENT_DIR_TYPE;
+            case REVIEW_WITH_ID:
+                return PopularMoviesContract.ReviewsEntry.CONTENT_ITEM_TYPE;
             case REVIEW_WITH_MOVIE_ID:
                 return PopularMoviesContract.ReviewsEntry.CONTENT_DIR_TYPE;
+
 
 
             default:
@@ -198,7 +203,7 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
             case VIDEO_WITH_MOVIE_ID:
-                String movie_id=String.valueOf(ContentUris.parseId(uri));
+                //String movie_id=String.valueOf(ContentUris.parseId(uri));
                 selection=PopularMoviesContract.VideosEntry.COLUMN_VIDEO_MOVIE_ID+"=?";
                 selectionArgs= new String[] {String.valueOf(ContentUris.parseId(uri))};
                 retCursor=mPopularMoviesDbHelper.getReadableDatabase().query(
@@ -213,14 +218,35 @@ public class PopularMoviesProvider extends ContentProvider {
                 break;
 
             case REVIEW:
-                retCursor=null;
+                retCursor=mPopularMoviesDbHelper.getReadableDatabase().query(
+                        PopularMoviesContract.ReviewsEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
+
             case REVIEW_WITH_MOVIE_ID:
-                retCursor=null;
+                //String movie_id=String.valueOf(ContentUris.parseId(uri));
+                selection=PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_MOVIE_ID+"=?";
+                selectionArgs= new String[] {String.valueOf(ContentUris.parseId(uri))};
+                retCursor=mPopularMoviesDbHelper.getReadableDatabase().query(
+                        PopularMoviesContract.ReviewsEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
 
-
-
+            case REVIEW_WITH_ID:
+                retCursor=queryReviewById(String.valueOf(ContentUris.parseId(uri)));
+                break;
 
             default:
 
@@ -255,6 +281,10 @@ public class PopularMoviesProvider extends ContentProvider {
 
             case VIDEO:
                 insertedUri=insertVideo(values);
+                break;
+
+            case REVIEW:
+                insertedUri=insertReview(values);
                 break;
 
 
@@ -292,6 +322,11 @@ public class PopularMoviesProvider extends ContentProvider {
                 rowsDeleted=deleteVideos();
                 break;
 
+            case REVIEW:
+                rowsDeleted=deleteReviews();
+                break;
+
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -326,6 +361,11 @@ public class PopularMoviesProvider extends ContentProvider {
             case VIDEO:
                 rowsInserted=bulkInsertVideos(values);
                 break;
+            case REVIEW:
+                rowsInserted=bulkInsertReviews(values);
+                break;
+
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -614,6 +654,113 @@ public class PopularMoviesProvider extends ContentProvider {
 
 
     }
+
+
+    /**
+            * Helper Method for Manage the Review TABLE
+    *
+     * */
+
+
+    private Uri insertReview(ContentValues values){
+
+        Uri insertedReviewUri=null;
+        Long insertedReviewId;
+
+
+        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+        if (db.isOpen()){
+            insertedReviewId=db.insert(PopularMoviesContract.ReviewsEntry.TABLE_NAME,null,values);
+            if(insertedReviewId!=-1){
+                    insertedReviewUri=PopularMoviesContract.ReviewsEntry.buildReviewsById(insertedReviewId);
+            }else{
+                insertedReviewUri=null;
+                Log.e(LOG_TAG,"Review could not be inserted");
+            }
+
+
+        }else{
+            insertedReviewUri=null;
+            Log.e(LOG_TAG,"database could not be opened");
+        }
+
+
+        return insertedReviewUri;
+
+
+    }
+
+
+    private Cursor queryReviewById (String id){
+        Cursor cursor;
+        SQLiteDatabase db=mPopularMoviesDbHelper.getReadableDatabase();
+        if (db.isOpen()){
+            String SQLStatement="SELECT * from "+PopularMoviesContract.ReviewsEntry.TABLE_NAME+" WHERE _id="+id;
+            cursor=db.rawQuery(SQLStatement,null);
+        }else{
+            cursor=null;
+            Log.e(LOG_TAG,"database could not be opened");
+        }
+        return cursor;
+    }
+
+
+
+
+    private int deleteReviews(){
+        int deletedReviews;
+
+        //We ensure that movie is not part of the favorite nor the Movie List
+        String sqlWhere= PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_MOVIE_ID
+                + " NOT IN (SELECT "+PopularMoviesContract.FavoritesEntry._ID
+                +" FROM "+PopularMoviesContract.FavoritesEntry.TABLE_NAME+")" +
+                " AND "+PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_MOVIE_ID
+                + " NOT IN (SELECT "+PopularMoviesContract.MoviesEntry._ID
+                +" FROM "+PopularMoviesContract.MoviesEntry.TABLE_NAME+")";
+
+        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+        if (db.isOpen()){
+            deletedReviews=db.delete(PopularMoviesContract.ReviewsEntry.TABLE_NAME,sqlWhere,null);
+
+
+        }else{
+            deletedReviews=-1;
+            Log.e(LOG_TAG,"database could not be opened");
+        }
+
+
+        return deletedReviews;
+
+
+    }
+
+
+
+    private int bulkInsertReviews(ContentValues[] values){
+
+        int rowsInserted = 0;
+        final SQLiteDatabase db = mPopularMoviesDbHelper.getWritableDatabase();
+        db.beginTransaction();
+        try {
+            for (ContentValues value : values) {
+
+                long _id=db.insert(PopularMoviesContract.ReviewsEntry.TABLE_NAME,null,value);
+                if (_id!=-1){
+                    rowsInserted++;
+                }
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+        return rowsInserted;
+
+
+    }
+
+
+
 
 
 
