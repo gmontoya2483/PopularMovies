@@ -75,8 +75,9 @@
                         android:text="@string/fake_id"
                         android:gravity="center"
                         android:padding="5dp"
-                        android:visibility="gone"
+
                         />
+                    <!--android:visibility="gone"-->
 
                     <Button
                         android:layout_width="wrap_content"

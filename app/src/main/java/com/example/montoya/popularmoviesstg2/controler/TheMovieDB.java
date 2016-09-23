@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.Review;
 import com.example.montoya.popularmoviesstg2.model.Video;
 
 import org.json.JSONArray;
@@ -502,10 +503,10 @@ public class TheMovieDB {
     }
 
 
-/*
+
 
     //Parser method which gets a JSon String and return an ArrayList of Movies
-    public ArrayList<Video> JSonReviewParser (String JsonMessage)  {
+    public ArrayList<Review> JSonReviewParser (String JsonMessage)  {
 
 
 
@@ -513,11 +514,10 @@ public class TheMovieDB {
 
 
         final String OWM_RESULTS="results";
-        final String KEY="key";
-        final String NAME="name";
-        final String SITE="site";
-        final String TYPE="type";
         final String MOVIE_ID="id";
+        final String AUTHOR="author";
+        final String CONTENT="content";
+        final String URL="url";
 
 
         String movieID;
@@ -525,38 +525,32 @@ public class TheMovieDB {
 
 
 
-        JSONObject videoJsonList= null;
-        JSONObject videoJson=null;
+        JSONObject reviewJsonList= null;
+        JSONObject reviewJson=null;
         try {
-            videoJsonList = new JSONObject(JsonMessage);
-            movieID=videoJsonList.getString(MOVIE_ID);
-            JSONArray videoJsonArray=videoJsonList.getJSONArray(OWM_RESULTS);
+            reviewJsonList = new JSONObject(JsonMessage);
+            movieID=reviewJsonList.getString(MOVIE_ID);
+            JSONArray reviewJsonArray=reviewJsonList.getJSONArray(OWM_RESULTS);
 
 
-            for (int i=0;i <videoJsonArray.length();i++){
+            for (int i=0;i <reviewJsonArray.length();i++){
 
 
-                String key="";
-                String name="";
-                String site="";
-                String type="";
+                String author="";
+                String content="";
+                String url="";
 
+                reviewJson=reviewJsonArray.getJSONObject(i);
+                author=reviewJson.getString(AUTHOR);
+                content=reviewJson.getString(CONTENT);
+                url=reviewJson.getString(URL);
 
-
-
-                videoJson=videoJsonArray.getJSONObject(i);
-                key=videoJson.getString(KEY);
-                name=videoJson.getString(NAME);
-                site=videoJson.getString(SITE);
-                type=videoJson.getString(TYPE);
-
-
-                myVideoList.add(new Video(Long.parseLong(movieID),key,name,site,type));
+                myReviewList.add(new Review(Long.parseLong(movieID),author,content,url));
 
 
             }
 
-            return myVideoList;
+            return myReviewList;
 
 
 
@@ -570,7 +564,7 @@ public class TheMovieDB {
 
 
 
-*/
+
 
 
 
