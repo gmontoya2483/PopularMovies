@@ -2,6 +2,7 @@ package com.example.montoya.popularmoviesstg2.model;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 
 import com.example.montoya.popularmoviesstg2.model.data.PopularMoviesContract;
@@ -109,6 +110,15 @@ public class Review {
         Uri allReviewsUri=PopularMoviesContract.ReviewsEntry.buildAllReviewsUri();
         qtyOfDeletedReviews=context.getContentResolver().delete(allReviewsUri,null,null);
         return qtyOfDeletedReviews;
+
+    }
+
+
+    public static void ReadReview(Context context, String url){
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            context.startActivity(intent);
+
 
     }
 

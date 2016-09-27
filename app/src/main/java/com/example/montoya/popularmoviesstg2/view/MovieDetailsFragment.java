@@ -25,10 +25,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.montoya.popularmoviesstg2.R;
+import com.example.montoya.popularmoviesstg2.controler.ReviewArrayAdapter;
 import com.example.montoya.popularmoviesstg2.controler.TheMovieDB;
 import com.example.montoya.popularmoviesstg2.controler.Utils;
 import com.example.montoya.popularmoviesstg2.controler.VideoArrayAdapter;
 import com.example.montoya.popularmoviesstg2.model.Movie;
+import com.example.montoya.popularmoviesstg2.model.Review;
 import com.example.montoya.popularmoviesstg2.model.Video;
 import com.squareup.picasso.Picasso;
 
@@ -49,6 +51,9 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private ArrayList<Video> mVideosList;
     private VideoArrayAdapter mVideoAdapter;
 
+    private ArrayList<Review> mReviewList;
+    private ReviewArrayAdapter mReviewAdapter;
+
 
 
 
@@ -60,6 +65,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private TextView movieId;
     private Button butonFavorites;
     private ListView videoListView;
+    private ListView reviewListView;
 
 
     private static final int MOVIE_DETAILS_LOADER = 1;
@@ -198,7 +204,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
 
-        //Set the
+        //Set the moviesList
         mVideosList=mMovie.getVideosList(getActivity());
         if (mVideosList!=null){
             //Set the adapter
@@ -211,6 +217,25 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             getVideosFromInternet();
 
         }
+
+
+        //Set the ReviewList
+        mReviewList=mMovie.getReviewsList(getActivity());
+        if (mReviewList!=null){
+            //Set the adapter
+            mReviewAdapter=new ReviewArrayAdapter(getActivity(),mReviewList);
+            reviewListView.setAdapter(mReviewAdapter);
+
+
+
+        }else{
+            getReviewsFromInternet();
+
+        }
+
+
+
+
 
 
 
@@ -269,7 +294,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
 
 
-        //Set the List View
+        //Set the VideoList View
        videoListView =(ListView) mRootView.findViewById(R.id.videos_ListView);
        //Add the listener
        videoListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -278,6 +303,20 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Video video= (Video) videoListView.getItemAtPosition(position);
                 Video.watchVideo(getActivity(),video.getKey());
+
+            }
+        });
+
+
+        //Set the VideoList View
+        reviewListView =(ListView) mRootView.findViewById(R.id.reviews_ListView);
+        //Add the listener
+        reviewListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Review review= (Review) reviewListView.getItemAtPosition(position);
+                Review.ReadReview(getActivity(),review.getUrl());
 
             }
         });
@@ -306,11 +345,29 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     }
 
 
+    private void getReviewsFromInternet(){
+
+        ConnectivityManager connMgr = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            //Execute the Async task
+            FetchReviewsTask reviewTask=new FetchReviewsTask(getActivity(),mMovie.getId());
+            reviewTask.execute();
+
+
+        } else {
+
+            Toast.makeText(getActivity(), R.string.err_no_netwaork_connection, Toast.LENGTH_LONG).show();
+        }
+
+    }
 
 
 
 
-    //Inner Class to fetch the videos from intermet
+
+
+    //Inner Class to fetch the videos from internet
     public class FetchVideosTask extends AsyncTask<Void,Void,ArrayList<Video>> {
 
         private final String LOG_TAG=FetchVideosTask.class.getSimpleName();
@@ -371,6 +428,73 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
         }
     }
+
+
+
+
+
+    //Inner Class to fetch the reviews from internet
+    public class FetchReviewsTask extends AsyncTask<Void,Void,ArrayList<Review>> {
+
+        private final String LOG_TAG=FetchReviewsTask.class.getSimpleName();
+        private TheMovieDB mTheMovieDB = new TheMovieDB();
+        private final Context mContext;
+        private Long mMovieId;
+
+
+
+        public FetchReviewsTask(Context context,Long movieID){
+            this.mContext=context;
+            this.mMovieId=movieID;
+
+        }
+
+
+        @Override
+        protected ArrayList<Review> doInBackground(Void... voids) {
+            ArrayList<Review> mReviewList;
+
+            String JsonString=mTheMovieDB.getReviewsFromInternet(mMovieId);
+            if (JsonString!=null){
+                mReviewList=new ArrayList<Review>(mTheMovieDB.JSonReviewParser(JsonString));
+                Review.bulkInsertReviews(mContext,mReviewList);
+
+            }else{
+                mReviewList=null;
+            }
+
+
+
+
+            return mReviewList;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Review> reviews) {
+
+            if (mReviewList!=null){
+                mReviewList.clear();
+            }else{
+                mReviewList=new ArrayList<Review>();
+            }
+
+
+            if(reviews!=null){
+                for (Review reviewItem: reviews){
+                    mReviewList.add(reviewItem);
+                }
+                mReviewAdapter=new ReviewArrayAdapter(getActivity(),mReviewList);
+                reviewListView.setAdapter(mReviewAdapter);
+            }
+
+
+
+
+
+
+        }
+    }
+
 
 
 

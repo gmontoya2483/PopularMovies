@@ -69,9 +69,22 @@
     <!--Video sections-->
     <string name="video_section_title">Videos:</string>
 
+
     <!--Fake String for video section-->
     <string name="fake_video_name">Official Trailer</string>
     <string name="fake_video_type">Trailer</string>
+
+
+    <!--Review sections-->
+    <string name="review_section_title">Reviews:</string>
+
+
+    <!--Fake String for review section-->
+    <string name="fake_review_author">Author@blabla</string>
+    <string name="fake_review_content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis</string>
+
+
+
 
 
 

@@ -20,6 +20,7 @@ public class Movie {
     private String userRating;
     private String releaseDate;
     private ArrayList<Video> videosList;
+    private ArrayList<Review> reviewsList;
 
 
 
@@ -190,6 +191,44 @@ public class Movie {
         }
 
         return videosList;
+    }
+
+
+
+    public ArrayList<Review> getReviewsList(Context context) {
+
+        ArrayList<Review>reviews=new ArrayList<Review>();
+        Uri allReviewsByMovieUri=PopularMoviesContract.ReviewsEntry.buildReviewsByMovieIdUri(this.id);
+        Cursor cursor;
+        Long reviewId, reviewMovieId;
+        String reviewAuthor,reviewContent, reviewUrl;
+
+
+
+
+        if (this.reviewsList==null){
+            cursor=context.getContentResolver().query(allReviewsByMovieUri,null,null,null,null);
+            if(cursor.getCount()==0){
+                reviews=null;
+            }
+
+            while (cursor.moveToNext()){
+
+                reviewId=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry._ID));
+                reviewMovieId=cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_MOVIE_ID));
+                reviewAuthor=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_AUTHOR));
+                reviewContent=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_CONTENT));
+                reviewUrl=cursor.getString(cursor.getColumnIndex(PopularMoviesContract.ReviewsEntry.COLUMN_REVIEW_URL));
+
+                reviews.add(new Review(reviewId,reviewMovieId,reviewAuthor,reviewContent,reviewUrl));
+
+            }
+
+            reviewsList=reviews;
+
+        }
+
+        return reviewsList;
     }
 
 
