@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +71,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
 
     private static final int MOVIE_DETAILS_LOADER = 1;
 
+    static final String DETAIL_URI = "URI";
+
 
 
     View mRootView;
@@ -79,6 +82,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     public MovieDetailsFragment(){
 
     }
+
+
 
 
 
@@ -98,7 +103,15 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        getIntentParameter();
+        //getIntentParameter();
+
+        Bundle arguments=getArguments();
+        if (arguments!=null){
+            movieUri=arguments.getParcelable(MovieDetailsFragment.DETAIL_URI);
+            mMovieID= ContentUris.parseId(movieUri);
+
+
+        }
 
         // Inflate the layout for this fragment
          mRootView= inflater.inflate(R.layout.fragment_movie_details, container, false);
@@ -127,8 +140,21 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
+        /*Intent intent=getActivity().getIntent();
+        if (intent==null || intent.getData()==null){
+            return null;
+        }
 
-        return new CursorLoader(getActivity(),movieUri,null,null,null,null);
+        */
+
+
+
+        if ( null != movieUri ) {
+
+            return new CursorLoader(getActivity(),movieUri,null,null,null,null);
+        }else{
+            return null;
+        }
     }
 
     @Override
@@ -150,10 +176,15 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     */
 
     private void getIntentParameter(){
-        Intent intent=getActivity().getIntent();
-        if (intent != null) {
+        //Intent intent=getActivity().getIntent();
 
-            movieUri=intent.getData();
+        Bundle arguments=getArguments();
+        //if (intent != null) {
+
+        if (arguments!=null){
+
+            //movieUri=intent.getData();
+            movieUri=arguments.getParcelable(MovieDetailsFragment.DETAIL_URI);
             mMovieID= ContentUris.parseId(movieUri);
             //mMovieID=intent.getLongExtra("MOVIE_ID",-1L);
 
@@ -175,7 +206,8 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         Picasso.with(getActivity()).load(imagePath).into(movieImage);
 
         //Set the movie title
-        movieTitle.setText(mMovie.getTitle());
+       movieTitle.setText(mMovie.getTitle());
+
 
         //Set the movie release Date
         movieReleaseDate.setText(Utils.getYear(mMovie.getReleaseDate()));

@@ -38,11 +38,15 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     private static final int MOVIE_LOADER = 0;
     private String mCurrentSelection;
 
-
+    public interface Callback{
+        public void onItemSelected (Uri movieUri);
+    }
 
     public MoviesFragment() {
         // Required empty public constructor
     }
+
+
 
 
     @Override
@@ -83,7 +87,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
                 Cursor cursor=(Cursor) parent.getItemAtPosition(position);
                 if (cursor!=null){
-                    Intent intent=new Intent(getContext(),MovieDetailsActivity.class);
+                    //Intent intent=new Intent(getContext(),MovieDetailsActivity.class);
 
                    if (mCurrentSelection.equals(FAVORITES_SELECTION)){
                         SelectedMovieUri=PopularMoviesContract.FavoritesEntry.buildFavoriteByIdUri(cursor.getLong(cursor.getColumnIndex(PopularMoviesContract.FavoritesEntry._ID)));
@@ -93,8 +97,15 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
                     }
 
-                    intent.setData(SelectedMovieUri);
-                    startActivity(intent);
+
+
+                    //intent.setData(SelectedMovieUri);
+                    //startActivity(intent);
+
+
+                    ((Callback) getActivity())
+                            .onItemSelected(SelectedMovieUri);
+
 
 
                 }

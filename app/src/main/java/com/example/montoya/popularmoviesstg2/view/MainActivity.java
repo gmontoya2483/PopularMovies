@@ -2,20 +2,25 @@ package com.example.montoya.popularmoviesstg2.view;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.montoya.popularmoviesstg2.R;
 import com.example.montoya.popularmoviesstg2.controler.Utils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MoviesFragment.Callback{
     private final String LOG_TAG=MainActivity.class.getSimpleName();
     private final String MOVIESFRAGMENT_TAG = "MFTAG";
+    private final String DETAILMOVIEFRAGMENT_TAG = "DMFTAG";
     public String mSelection;
+
+    private boolean mTwoPane;
 
 
 
@@ -30,6 +35,24 @@ public class MainActivity extends AppCompatActivity {
 
 
         mSelection= Utils.getCurrentSelection(this);
+
+
+        if (findViewById(R.id.movie_details_container)!=null){
+            mTwoPane=true;
+
+            if(savedInstanceState==null){
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.movie_details_container,new MovieDetailsFragment())
+                        .commit();
+            }
+
+
+
+        }else{
+            mTwoPane=false;
+        }
+
+
 
 
 
@@ -68,5 +91,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onItemSelected(Uri movieUri) {
+
+
+
+        if (mTwoPane){
+
+            //Log.e ("CALLBACK URI:", movieUri.toString());
+
+            Bundle args=new Bundle();
+            args.putParcelable(MovieDetailsFragment.DETAIL_URI,movieUri);
+
+            MovieDetailsFragment fragment=new MovieDetailsFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.movie_details_container,fragment,  DETAILMOVIEFRAGMENT_TAG)
+                    .commit();
+
+
+        }else{
+
+            Intent intent=new Intent(this,MovieDetailsActivity.class)
+                    .setData(movieUri);
+            startActivity(intent);
+
+        }
+    }
 }
 

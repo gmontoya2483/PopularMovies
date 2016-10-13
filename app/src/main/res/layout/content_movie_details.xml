@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/movie_details_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".view.MovieDetailsActivity"
+    tools:ignore="MergeRootFrame"
+    />
+
+
+
+
+<!--
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".view.MovieDetailsActivity"
-    tools:showIn="@layout/activity_movie_details"
-    android:orientation="vertical">
+    tools:showIn="@layout/activity_movie_details">
 
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -20,11 +33,6 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:layout="@layout/fragment_movie_details" />
 
-
-
-
-
-
-
-</LinearLayout>
+</FrameLayout>
+-->
 

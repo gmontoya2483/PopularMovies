@@ -11,4 +11,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorTitleBack">#029789</color>
     <color name="colorTitleFont">#FFFFFF</color>
+    <color name="colorBackLight">#FFFFFF</color>
 </resources>

@@ -3,187 +3,201 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:padding="0dp"
+    android:background="@color/colorBackLight"
+    android:layout_marginTop="34dp"
+    >
 
-    <!--Movie Info section-->
-    <TextView
+
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/details_title"
-        android:text="@string/fake_title"
-        style="@style/detail_title"
-        android:padding="8dp" />
-
-
-    <!--Movie Info section-->
-
-
-
-        <LinearLayout
+        android:layout_height="0dp"
+        android:layout_weight="2"        >
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:orientation="horizontal"
-            android:layout_margin="10dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/details_image"
-                android:src="@drawable/hardoceded_w185"
-                android:padding="0dp"
-
-                />
-            <ScrollView
+            android:layout_height="wrap_content">
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/details_title"
+                    android:text="@string/fake_title"
+                    style="@style/detail_title"
+                    android:padding="8dp" />
 
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingTop="10dp"
-                    android:paddingLeft="10dp"
-                    android:orientation="vertical"
-                    >
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_margin="10dp">
 
-
-                    <TextView
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/details_release_date"
-                        android:gravity="center"
-                        android:layout_gravity="top"
-                        android:padding="5dp"
-                        android:textSize="26dp"
-                        android:text="@string/fake_release_date" />
+                        android:id="@+id/details_image"
+                        android:src="@drawable/hardoceded_w185"
+                        android:layout_weight="1"
+                        android:padding="0dp"/>
 
-                    <TextView
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/details_user_rating"
-                        android:text="@string/fake_rating"
-                        android:gravity="center"
-                        android:padding="5dp"
-                        android:layout_marginTop="10dp"
-                        android:textStyle="bold" />
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/details_id"
-                        android:text="@string/fake_id"
-                        android:gravity="center"
-                        android:padding="5dp"
-                        android:visibility="gone"
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/details_release_date"
+                            android:gravity="center"
+                            android:layout_gravity="top"
+                            android:padding="5dp"
+                            android:textSize="26dp"
+                            android:text="@string/fake_release_date" />
 
-                        />
-                    <!---->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/details_user_rating"
+                            android:text="@string/fake_rating"
+                            android:gravity="center"
+                            android:padding="5dp"
+                            android:layout_marginTop="10dp"
+                            android:textStyle="bold" />
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/button_favorites"
-                        android:text="@string/btn_MarkAsFavorites"
-                        android:textColor="@color/colorTitleFont"
-                        android:background="@color/colorTitleBack"
-                        android:gravity="center"
-                        android:layout_gravity="bottom|center"
-                        android:layout_marginTop="10dp"
-                        android:padding="10dp"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/details_id"
+                            android:text="@string/fake_id"
+                            android:gravity="center"
+                            android:padding="5dp"
+                            android:visibility="gone"/>
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/button_favorites"
+                            android:text="@string/btn_MarkAsFavorites"
+                            android:textColor="@color/colorTitleFont"
+                            android:background="@color/colorTitleBack"
+                            android:gravity="center"
+                            android:layout_gravity="bottom|center"
+                            android:layout_marginTop="10dp"
+                            android:padding="10dp"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
-            </ScrollView>
 
-         </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/details_synopsys"
+                    android:text="@string/fake_overview"/>
 
 
-    <!-- Synopsis -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_margin="10dp">
-        <TextView
+            </LinearLayout>
+
+        </ScrollView>
+
+    </FrameLayout>
+
+    <FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1">
+
+        <!--Trailers seccion-->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/details_synopsys"
-            android:text="@string/fake_overview"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_margin="10dp">
 
-            />
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/black"/>
 
-    </ScrollView>
-
-
-    <!--Trailers seccion-->
-    <LinearLayout
-         android:layout_width="match_parent"
-         android:layout_height="0dp"
-         android:orientation="vertical"
-         android:layout_weight="2"
-        android:layout_margin="10dp"
-
-         >
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/black"/>
-
-         <TextView
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:padding="3dp"
-             android:text="@string/video_section_title"
-             android:textSize="20dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="3dp"
+                android:text="@string/video_section_title"
+                android:textSize="20dp"/>
 
 
-         <ListView
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:id="@+id/videos_ListView"
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/videos_ListView"
 
-             >
+                >
 
-         </ListView>
-    </LinearLayout>
+            </ListView>
+        </LinearLayout>
 
 
 
-    <!--Review seccion-->
-    <LinearLayout
+    </FrameLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="2"
-        android:layout_margin="10dp"
-
-        >
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/black"/>
-
-        <TextView
+        android:layout_weight="1">
+        <!--Review seccion-->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="3dp"
-            android:text="@string/review_section_title"
-            android:textSize="20dp"/>
-
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/reviews_ListView"
+            android:orientation="vertical"
+            android:layout_margin="10dp"
 
             >
 
-        </ListView>
-    </LinearLayout>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="3dp"
+                android:text="@string/review_section_title"
+                android:textSize="20dp"/>
+
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/reviews_ListView"
+
+                >
+
+            </ListView>
+        </LinearLayout>
+
+
+
+    </FrameLayout>
+
+
+
+
+
 
 
 </LinearLayout>
+
+
+
 
 
 
