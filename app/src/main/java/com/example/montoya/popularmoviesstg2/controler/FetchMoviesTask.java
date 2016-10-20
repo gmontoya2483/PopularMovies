@@ -46,7 +46,7 @@ public class FetchMoviesTask extends AsyncTask<Void,Void,Void> {
 
 
 
-        //TODO Ver como reemplazar esto por los valores del file String
+
         if(!endPointFilter.equals("favorite_collection")){
 
 

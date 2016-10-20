@@ -1,6 +1,7 @@
 package com.example.montoya.popularmoviesstg2.controler;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -8,6 +9,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.montoya.popularmoviesstg2.R;
+import com.example.montoya.popularmoviesstg2.controler.Service.PopularService;
+
 import com.example.montoya.popularmoviesstg2.model.Movie;
 import com.example.montoya.popularmoviesstg2.model.Review;
 import com.example.montoya.popularmoviesstg2.model.Video;
@@ -235,10 +238,18 @@ public class TheMovieDB {
         ConnectivityManager connMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            //Execute the Async task
-            //FetchMoviesTask moviesTask=new FetchMoviesTask(getActivity(),myMovieAdapter);
-            FetchMoviesTask moviesTask=new FetchMoviesTask(context);
-            moviesTask.execute();
+
+
+            //FetchMoviesTask moviesTask=new FetchMoviesTask(context);
+            //moviesTask.execute();
+
+            Intent intent=new Intent (context, PopularService.class);
+            intent.putExtra(PopularService.TRIGGER_METHOD,"Button");
+            context.startService(intent);
+
+
+
+
 
 
         } else {

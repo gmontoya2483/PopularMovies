@@ -146,9 +146,6 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         }
 
         */
-
-
-
         if ( null != movieUri ) {
 
             return new CursorLoader(getActivity(),movieUri,null,null,null,null);

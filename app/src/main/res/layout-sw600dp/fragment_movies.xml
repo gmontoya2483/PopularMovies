@@ -3,13 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.MoviesFragment"
-    android:background="@color/colorBackLight">
+    android:background="@color/colorBackLight"
+    android:layout_gravity="center">
 
     <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/movies_ListView"
         android:numColumns="1"
-        android:layout_gravity="center_horizontal"></GridView>
+        ></GridView>
 
 </FrameLayout>

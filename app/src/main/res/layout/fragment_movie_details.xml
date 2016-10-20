@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="0dp"
-    android:background="@color/colorBackLight"
-    android:layout_marginTop="34dp"
-    >
+    android:background="@color/colorBackLight">
 
 
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"        >
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
+
+           <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
+               android:layout_height="0dp"
+               android:layout_weight="2"
+               android:orientation="vertical">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -30,7 +26,6 @@
                     android:text="@string/fake_title"
                     style="@style/detail_title"
                     android:padding="8dp" />
-
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -101,24 +96,17 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/details_synopsys"
                     android:text="@string/fake_overview"/>
+           </LinearLayout>
+   
 
 
-            </LinearLayout>
-
-        </ScrollView>
-
-    </FrameLayout>
-
-    <FrameLayout
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1">
 
         <!--Trailers seccion-->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:orientation="vertical"
+            android:layout_weight="1"
             android:layout_margin="10dp">
 
             <View
@@ -146,16 +134,14 @@
 
 
 
-    </FrameLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+
+
         <!--Review seccion-->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="vertical"
             android:layout_margin="10dp"
 
@@ -186,15 +172,12 @@
 
 
 
-    </FrameLayout>
-
-
-
-
 
 
 
 </LinearLayout>
+
+</ScrollView>
 
 
 

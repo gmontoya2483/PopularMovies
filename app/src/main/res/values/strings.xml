@@ -83,7 +83,9 @@
     <string name="fake_review_author">Author@blabla</string>
     <string name="fake_review_content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis</string>
 
-
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">popularmovies.montoya.example.com</string>
+    <string name="content_authority">com.example.montoya.popularmovies</string>
 
 
 

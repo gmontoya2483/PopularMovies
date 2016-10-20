@@ -38,8 +38,13 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     private static final int MOVIE_LOADER = 0;
     private String mCurrentSelection;
 
+    private int mPosition=GridView.INVALID_POSITION;
+    private static final String SELECTED_KEY="selected_position";
+
+
     public interface Callback{
         public void onItemSelected (Uri movieUri);
+        public void onSelectionChange();
     }
 
     public MoviesFragment() {
@@ -109,12 +114,19 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
 
                 }
+                mPosition=position;
 
 
 
 
             }
         });
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
+            // The listview probably hasn't even been populated yet.  Actually perform the
+            // swapout in onLoadFinished.
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
+        }
 
 
         return rootView;
@@ -144,6 +156,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         if (!selection.equals(mCurrentSelection)){
             mCurrentSelection=selection;
             onSelectionChanged();
+
 
 
         }
@@ -184,6 +197,13 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         myMovieAdapter.swapCursor(data);
+        if (mPosition != GridView.INVALID_POSITION) {
+
+            myMovieListView.smoothScrollToPosition(mPosition);
+        }
+
+
+
 
     }
 
@@ -197,16 +217,26 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
 
     public void onSelectionChanged(){
+
         TheMovieDB.updateMovies(getActivity());
         getLoaderManager().restartLoader(MOVIE_LOADER,null,this);
 
+        ((Callback) getActivity()).onSelectionChange();
+
+
+
+
+
+
+
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
 
-
-
-
-
-
-
+        if (mPosition != GridView.INVALID_POSITION) {
+            outState.putInt(SELECTED_KEY, mPosition);
+        }
+        super.onSaveInstanceState(outState);
+    }
 }

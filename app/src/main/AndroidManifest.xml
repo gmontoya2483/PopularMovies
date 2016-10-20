@@ -2,9 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.montoya.popularmoviesstg2">
 
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <!-- These permissions are necessary in order for PopularMovies to perform network access. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+
+    <!-- Permissions required by the sync adapter -->
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+
+
+
+
 
     <application
         android:allowBackup="true"
@@ -34,11 +44,18 @@
         <activity android:name=".view.SettingsActivity" />
 
         <provider
-            android:authorities="com.example.montoya.popularmovies"
+            android:authorities="@string/content_authority"
             android:name=".model.data.PopularMoviesProvider"
             android:exported="false"
             android:syncable="true"
             />
+        
+
+
+
+
+        <service android:name=".controler.Service.PopularService" android:exported="false"></service>
+        <receiver android:name=".controler.Service.PopularService$AlarmReceiver" android:enabled="true"></receiver>
 
     </application>
 

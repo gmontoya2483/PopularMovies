@@ -1,5 +1,6 @@
 package com.example.montoya.popularmoviesstg2.view;
 
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.Ca
     private final String MOVIESFRAGMENT_TAG = "MFTAG";
     private final String DETAILMOVIEFRAGMENT_TAG = "DMFTAG";
     public String mSelection;
+    private MovieDetailsFragment mFragment;
 
     private boolean mTwoPane;
 
@@ -40,11 +42,19 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.Ca
         if (findViewById(R.id.movie_details_container)!=null){
             mTwoPane=true;
 
+
+
+
+            /*
+
             if(savedInstanceState==null){
+
+
+
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.movie_details_container,new MovieDetailsFragment())
                         .commit();
-            }
+            }*/
 
 
 
@@ -94,30 +104,55 @@ public class MainActivity extends AppCompatActivity implements MoviesFragment.Ca
     @Override
     public void onItemSelected(Uri movieUri) {
 
+        if (movieUri!=null){
+
+            if (mTwoPane){
 
 
-        if (mTwoPane){
+                Bundle args=new Bundle();
+                args.putParcelable(MovieDetailsFragment.DETAIL_URI,movieUri);
 
-            //Log.e ("CALLBACK URI:", movieUri.toString());
+                mFragment=new MovieDetailsFragment();
+                mFragment.setArguments(args);
 
-            Bundle args=new Bundle();
-            args.putParcelable(MovieDetailsFragment.DETAIL_URI,movieUri);
-
-            MovieDetailsFragment fragment=new MovieDetailsFragment();
-            fragment.setArguments(args);
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.movie_details_container,fragment,  DETAILMOVIEFRAGMENT_TAG)
-                    .commit();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.movie_details_container,mFragment,  DETAILMOVIEFRAGMENT_TAG)
+                        .commit();
 
 
-        }else{
 
-            Intent intent=new Intent(this,MovieDetailsActivity.class)
-                    .setData(movieUri);
-            startActivity(intent);
+
+
+            }else{
+
+                Intent intent=new Intent(this,MovieDetailsActivity.class)
+                        .setData(movieUri);
+                startActivity(intent);
+
+            }
 
         }
+
+
+
+
     }
+
+    @Override
+    public void onSelectionChange() {
+
+            if (mFragment!=null && mTwoPane){
+                getSupportFragmentManager().beginTransaction()
+                        .remove(mFragment)
+                        .commit();
+
+            }
+
+
+
+
+    }
+
+
 }
 
