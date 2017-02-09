@@ -1,4 +1,4 @@
-# PopularMoviesSTG2
+# PopularMovies
 Android Nano degree Popular Movies project.
 <Li>Android application, part of the Udacity Android Developer Nanodegree Program</Li>
 <Li>Catalog shows the user's popular and highest-ranked movies using the MovieDB API and JSON</Li>
